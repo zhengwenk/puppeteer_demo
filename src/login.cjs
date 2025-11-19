@@ -1,4 +1,4 @@
-const loginHandlers = require('./login');
+const loginHandlers = require('./login-handlers');
 const {createBrowser} = require("./browser");
 
 (async () => {
