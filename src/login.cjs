@@ -32,7 +32,7 @@ const {createBrowser} = require("./browser.cjs");
         if (!logined) {
             throw new Error(`登录失败，channel: ${channel}`);
         }
-x
+
         console.log("登录成功！");
     } catch (error) {
         // 捕获所有 Promise 拒绝和同步错误

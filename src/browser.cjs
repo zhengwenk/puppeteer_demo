@@ -5,7 +5,8 @@ const { executablePath } = require('puppeteer');
 
 puppeteer.use(StealthPlugin());
 
-export async function createBrowser(options = {}) {
+
+async function createBrowser(options = {}) {
     return await puppeteer.launch({
         headless: false,
         args: [
@@ -21,3 +22,7 @@ export async function createBrowser(options = {}) {
         userDataDir: options.userDataDir || undefined,
     });
 }
+
+module.exports = {
+    createBrowser,
+};
