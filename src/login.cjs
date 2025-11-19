@@ -16,6 +16,7 @@ const {createBrowser} = require("./browser.cjs");
         }
 
         browser = await createBrowser({
+            headless: "new",
             userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${username}`,
         });
 

@@ -8,7 +8,7 @@ puppeteer.use(StealthPlugin());
 
 async function createBrowser(options = {}) {
     return await puppeteer.launch({
-        headless: false,
+        headless: options.headless,
         args: [
             '--start-maximized',
             '--no-sandbox',
