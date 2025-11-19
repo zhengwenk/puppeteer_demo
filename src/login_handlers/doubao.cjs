@@ -1,4 +1,4 @@
-const {waitForSelectorSafe, waitSafe} = require("../util/wait");
+const {waitForSelectorSafe, waitSafe} = require("../util/wait.cjs");
 const fs = require('fs');
 
 // 判断豆包是否已登录
