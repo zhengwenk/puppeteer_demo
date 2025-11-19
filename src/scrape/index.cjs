@@ -4,7 +4,7 @@ const path = require('path');
 const actions = {};
 
 const files = fs.readdirSync(__dirname)
-    .filter(f => f.endsWith('.js') && f !== 'index.js');
+    .filter(f => (f.endsWith('.js') || f.endsWith('.cjs')) && f !== 'index.js' && f !== 'index.cjs');
 
 for (const file of files) {
     const action = require(path.join(__dirname, file));

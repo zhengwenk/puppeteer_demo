@@ -1,5 +1,4 @@
 // utils/wait.js
-
 async function waitSafe(page, ms) {
     if (page && typeof page.waitForTimeout === 'function') {
         return page.waitForTimeout(ms);
