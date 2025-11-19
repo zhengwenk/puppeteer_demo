@@ -1,10 +1,10 @@
 try {
-    const resolvedPath = require.resolve('./login-handlers');
+    const resolvedPath = require.resolve('./login_handlers');
     console.log(`✅ REQUIRE 成功解析到: ${resolvedPath}`);
 } catch (e) {
     console.error(`❌ REQUIRE 解析失败: ${e.message}`);
 }
-const loginHandlers = require('./login-handlers');
+const loginHandlers = require('./login_handlers');
 const {createBrowser} = require("./browser");
 
 (async () => {
