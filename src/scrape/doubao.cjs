@@ -1,4 +1,4 @@
-const {waitForSelectorSafe, waitSafe} = require("../util/wait");
+const {waitForSelectorSafe, waitSafe} = require("../util/wait.cjs");
 async function action(page, question) {
     console.log("开始 Doubao 抓取...");
 
