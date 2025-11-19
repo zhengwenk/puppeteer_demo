@@ -16,7 +16,7 @@ const {createBrowser} = require("./browser");
         }
 
         browser = await createBrowser({
-            userDataDir: process.env.PUPPETEER_USER_DATA_DIR + `/${channel}_${username}`,
+            userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${username}`,
         });
 
         const page = await browser.newPage();
@@ -32,7 +32,7 @@ const {createBrowser} = require("./browser");
         if (!logined) {
             throw new Error(`登录失败，channel: ${channel}`);
         }
-
+x
         console.log("登录成功！");
     } catch (error) {
         // 捕获所有 Promise 拒绝和同步错误
