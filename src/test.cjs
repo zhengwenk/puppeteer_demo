@@ -15,11 +15,13 @@ const {TaskExecutePlanModel, AiAccountModel} = require('./models/index.cjs');
         //     }
         // });
 
-        const account = await AiAccountModel.findById(1)
+        const account = await AiAccountModel.updateById(1, {login_status: 1});
         console.log(account)
 
 
     } catch (err) {
         console.log(err);
+    } finally {
+        await AiAccountModel.destroy()
     }
 })();

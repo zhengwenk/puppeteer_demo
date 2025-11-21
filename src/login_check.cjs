@@ -2,6 +2,9 @@ const loginHandlers = require('./login_handlers/index.cjs');
 const {createBrowser} = require("./browser.cjs");
 const {AiAccountModel} = require("./models/index.cjs");
 
+const loginStatusLogined = 1;
+const loginStatusNotLogined = 0;
+
 (async () => {
     // 确保整个主逻辑都被 try...catch 包裹，以捕获所有可能发生的错误
     let browser;
@@ -38,7 +41,16 @@ const {AiAccountModel} = require("./models/index.cjs");
 
         if (!logined) {
             console.log(`未登录，id:${process.env.Ai_ACCOUNT_ID}`);
+
+            if (aiAccount.login_status !== loginStatusNotLogined) {
+                await AiAccountModel.updateById(aiAccount.id, {login_status: loginStatusLogined})
+            }
+
             return
+        }
+
+        if (aiAccount.login_status !== loginStatusLogined) {
+            await AiAccountModel.updateById(aiAccount.id, {login_status: loginStatusLogined})
         }
 
         console.log("已经登录");
@@ -54,7 +66,6 @@ const {AiAccountModel} = require("./models/index.cjs");
             // 也可以直接输出完整的 error 对象
             console.error("完整错误对象:", error);
         }
-
     } finally {
         // 无论如何，确保浏览器被关闭
         if (browser) {

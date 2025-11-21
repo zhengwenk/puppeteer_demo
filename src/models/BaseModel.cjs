@@ -10,21 +10,37 @@ class BaseModel {
         return this.constructor.tableName;
     }
 
+    get hasTimestamps() {
+        return true
+    }
+
     query(trx = null) {
         return trx ? trx(this.constructor.tableName) : this.db.table(this.constructor.tableName);
     }
 
     async create(data, trx = null) {
+
+        if (this.hasTimestamps) {
+            const now = new Date();
+            data.created_at = now;
+            data.updated_at = now;
+        }
+
         const [id] = await this.query(trx).insert(data);
         return id;
     }
 
     async update(where, data, trx = null) {
+
+        if (this.hasTimestamps) {
+            data.updated_at = new Date();
+        }
+
         return this.query(trx).where(where).update(data);
     }
 
     async updateById(id, data, trx = null) {
-        return this.query(trx).where({id}).update(data);
+        return this.update({id}, data, trx);
     }
 
     async delete(where, trx = null) {
@@ -32,7 +48,7 @@ class BaseModel {
     }
 
     async deleteById(id, trx = null) {
-        return this.query(trx).delete({id});
+        return this.delete({id}, trx);
     }
 
     async find(where = {}, columns = ['*'], options = {}, trx = null) {
