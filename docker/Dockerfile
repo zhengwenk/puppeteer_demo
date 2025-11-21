@@ -11,6 +11,8 @@ WORKDIR /home/pptruser
 
 ENV PUPPETEER_CHROME_USER_DATA_DIR=/home/pptruser/chrome_data
 ENV PUPPETEER_USER_QRCODE_IMG_DIR=/home/pptruser/qrcode_img
+ENV PUPPETEER_DOWNLOAD_HOST=https://registry.npmmirror.com/binary.html
+
 
 RUN mkdir -p $PUPPETEER_CHROME_USER_DATA_DIR $PUPPETEER_USER_QRCODE_IMG_DIR
 
@@ -18,5 +20,5 @@ VOLUME ["/home/pptruser/chrome_data"]
 VOLUME ["/home/pptruser/qrcode_img"]
 
 COPY package*.json ./
-RUN npm config set puppeteer_download_host https://registry.npmmirror.com/binary.html
+
 RUN npm install --omit=dev
