@@ -18,4 +18,5 @@ VOLUME ["/home/pptruser/chrome_data"]
 VOLUME ["/home/pptruser/qrcode_img"]
 
 COPY package*.json ./
+RUN npm config set puppeteer_download_host https://registry.npmmirror.com/binary.html
 RUN npm install --omit=dev
