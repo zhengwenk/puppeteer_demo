@@ -37,10 +37,10 @@ async function doLogin(page, aiAccount) {
         await loginBtnEl.click();
 
         const canvas = await waitForSelectorSafe(page, 'canvas', {visible: true, timeout: 10000})
-        //await canvas.screenshot({ path: 'canvas.png' });
-        const base64Data = await canvas.screenshot({encoding: 'base64'});
+        await canvas.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + 'kimi.png'});
+        //const base64Data = await canvas.screenshot({encoding: 'base64'});
 
-        console.log(`\u001b]1337;File=name=screenshot.png;inline=1:${base64Data}\u0007`);
+        //console.log(`\u001b]1337;File=name=screenshot.png;inline=1:${base64Data}\u0007`);
 
         await waitSafe(60000);
         await page.reload({waitUntil: 'networkidle2'});
