@@ -2,23 +2,39 @@ const {waitForSelectorSafe, waitSafe} = require("../util/wait.cjs");
 const fs = require('fs');
 
 // 判断豆包是否已登录
-async function checkLogin(page) {
-    // 该元素依赖webui 如果变动需要重新寻找
-    const loginBtnSel = 'button[data-testid="to_login_button"]';
+async function checkLogin(page, nickname = "") {
+    // 查找是否有登录后的nickname
+    const welcomeTextSelector = 'div.cursor-default';
+    const welcomeTextEl = await waitForSelectorSafe(page, welcomeTextSelector, {visible: true, timeout: 15000});
 
-    const loginBtn = await waitForSelectorSafe(page, loginBtnSel, { visible: true, timeout: 5000 });
+    if (!welcomeTextEl) {
+        console.log("登录失败，未找到欢迎文本");
+        return false;
+    }
 
-    if (!loginBtn) {
-        console.log("Doubao 已登录");
+    const welcomeText = await welcomeTextEl.evaluate(n => n.innerText);
+
+    console.log("欢迎文本内容:", welcomeText);
+
+    // 预期的text是 "xxx，nickname"
+
+    const welcomeInfo = welcomeText.split("，");
+
+    if (welcomeInfo.length < 2) {
+        console.log("登录失败，欢迎文本格式不正确");
+        return false;
+    }
+
+    if (welcomeInfo[1] && welcomeInfo.trim() === nickname) {
+        console.log(welcomeInfo)
         return true;
     }
 
-    console.log("Doubao 未登录");
     return false;
 }
 
 //进行豆包登录操作
-async function doLogin(page) {
+async function doLogin(page, nickname = "") {
     console.log("开始 Doubao 登录...");
 
     const loginBtnSel = 'button[data-testid="to_login_button"]';
@@ -63,9 +79,7 @@ async function doLogin(page) {
     // 刷新页面，检查是否登录成功
     await page.reload({ waitUntil: 'networkidle2' });
 
-    // 查找登录后用户头像的元素
-    const avatarSel = 'span[data-testid="chat_header_avatar_button"]';
-    return !!(await waitForSelectorSafe(page, avatarSel, { visible: true, timeout: 15000 }));
+    return checkLogin(page, nickname);
 }
 
 module.exports = {

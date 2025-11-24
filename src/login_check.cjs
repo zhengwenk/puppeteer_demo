@@ -38,7 +38,7 @@ const loginStatusNotLogined = 0;
         const targetUrl = aiAccount.url;
         await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 10000});
 
-        const logined = await loginHandler.checkLogin(page)
+        const logined = await loginHandler.checkLogin(page, aiAccount.nickname);
 
         if (!logined) {
             console.log(`未登录，id:${process.env.Ai_ACCOUNT_ID}`);
