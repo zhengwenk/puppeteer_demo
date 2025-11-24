@@ -35,7 +35,7 @@ const {AiAccountModel} = require("./models/index.cjs");
         const targetUrl = aiAccount.url;
         await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 10000});
 
-        const logined = await loginHandler.doLogin(page)
+        const logined = await loginHandler.doLogin(page, aiAccount);
 
         if (!logined) {
             throw new Error(`登录失败，channel: ${aiAccount.channel}`);
