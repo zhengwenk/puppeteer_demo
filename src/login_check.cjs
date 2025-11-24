@@ -10,9 +10,10 @@ const loginStatusNotLogined = 0;
     let browser;
     try {
         // 获取环境变量确定是那个账号id
-        const aiAccount = await AiAccountModel.findById(process.env.Ai_ACCOUNT_ID);
+        const inputId = Number(process.env.Ai_ACCOUNT_ID);
+        const aiAccount = await AiAccountModel.findById(inputId);
 
-        if (!aiAccount || aiAccount.id !== process.env.Ai_ACCOUNT_ID) {
+        if (!aiAccount || aiAccount.id !== inputId) {
             console.error(`未找到对应的AI账号，ID: ${process.env.Ai_ACCOUNT_ID}`);
             return
         }
