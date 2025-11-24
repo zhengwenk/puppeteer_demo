@@ -25,7 +25,8 @@ switch (env) {
                 host: '127.0.0.1',
                 user: 'root',
                 password: 'dotdy4-Torsoz-rumsan',
-                database: 'my_dev'
+                database: 'my_dev',
+                timezone: 'Asia/Shanghai',
             },
             pool: {
                 min: 0,
