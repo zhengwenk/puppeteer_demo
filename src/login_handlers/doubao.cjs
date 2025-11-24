@@ -25,7 +25,7 @@ async function checkLogin(page, nickname = "") {
         return false;
     }
 
-    if (welcomeInfo[1] && welcomeInfo.trim() === nickname) {
+    if (welcomeInfo[1] && welcomeInfo[1].trim() === nickname) {
         console.log(welcomeInfo)
         return true;
     }
