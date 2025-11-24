@@ -19,14 +19,14 @@ async function checkLogin(page, nickname = "") {
     // 预期的text是 "xxx，nickname"
 
     const welcomeInfo = welcomeText.split("，");
-
+    console.log(welcomeInfo);
     if (welcomeInfo.length < 2) {
         console.log("登录失败，欢迎文本格式不正确");
         return false;
     }
 
     if (welcomeInfo[1] && welcomeInfo[1].trim() === nickname) {
-        console.log(welcomeInfo)
+        console.log("登录信息匹配成功");
         return true;
     }
 

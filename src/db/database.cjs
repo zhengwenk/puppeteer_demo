@@ -31,7 +31,7 @@ class Database {
 
         knexClient.on('query', query => {
             startTimes.set(query.__knexUid, Date.now());
-            console.log(`[SQL-START] ${query.sql}`);
+            console.log(`[SQL-START] ${query.sql} | bindings: ${JSON.stringify(query.bindings)}`);
         });
 
         knexClient.on('query-response', (response, query) => {

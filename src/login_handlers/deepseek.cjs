@@ -12,10 +12,10 @@ async function checkLogin(page, nickname = "") {
 
     const nicknameText = await nicknameTextEl.evaluate(n => n.innerText);
 
-    console.log("nickname:", nicknameText);
+    console.log("获取nickname:`${nicknameText}`");
 
     if (nicknameText && nicknameText.trim() === nickname) {
-        console.log("nicknameText");
+        console.log("登录信息匹配成功");
         return true;
     }
 
@@ -32,7 +32,7 @@ async function doLogin(page, aiAccount) {
         return checkLogin(page, aiAccount.nickname);
     } else {
         console.log('登录态未生效：页面被重定向到 /sign_in');
-        const wxIframe = await page.waitForSelector('#wxLogin iframe', {visible: true, timeout: 5000});
+        const wxIframe = await waitForSelectorSafe(page, '#wxLogin iframe', {visible: true, timeout: 5000});
         const frame = await wxIframe.contentFrame();
 
         if (!frame) {
@@ -41,7 +41,7 @@ async function doLogin(page, aiAccount) {
         }
 
         const qrcodeImgSelector = '#tpl_iframe .js_qrcode_img';
-        const qrcodeImgEl = await frame.waitForSelector(qrcodeImgSelector, {visible: true, timeout: 5000});
+        const qrcodeImgEl = await waitForSelectorSafe(frame, qrcodeImgSelector, {visible: true, timeout: 5000});
 
         // 获取登录loign失败
         if (!qrcodeImgEl) {
