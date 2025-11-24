@@ -1,4 +1,4 @@
-const {waitSafe, waitForSelectorSafe} = require("../util/wait");
+const {waitSafe, waitForSelectorSafe} = require("../util/wait.cjs");
 
 
 async function checkLogin(page, nickname = "") {
