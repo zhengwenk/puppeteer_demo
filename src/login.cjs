@@ -1,6 +1,6 @@
 const loginHandlers = require('./login_handlers/index.cjs');
 const {createBrowser} = require("./browser.cjs");
-const {AiAccountModel} = require("./models");
+const {AiAccountModel} = require("./models/index.cjs");
 
 (async () => {
     // 确保整个主逻辑都被 try...catch 包裹，以捕获所有可能发生的错误
