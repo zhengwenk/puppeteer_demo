@@ -34,7 +34,7 @@ async function checkLogin(page, nickname = "") {
 }
 
 //进行豆包登录操作
-async function doLogin(page, nickname = "") {
+async function doLogin(page, aiAccount) {
     console.log("开始 Doubao 登录...");
 
     const loginBtnSel = 'button[data-testid="to_login_button"]';
@@ -66,6 +66,9 @@ async function doLogin(page, nickname = "") {
     // 获取二维码图片的 src 属性
     const qrSrc = await qrEl.evaluate(n => n.src);
 
+    //更新二维码
+    //@todo
+
     // 豆包的是base64
     const b64 = qrSrc.replace(/^data:image\/\w+;base64,/, "");
 
@@ -79,7 +82,7 @@ async function doLogin(page, nickname = "") {
     // 刷新页面，检查是否登录成功
     await page.reload({ waitUntil: 'networkidle2' });
 
-    return checkLogin(page, nickname);
+    return await checkLogin(page, aiAccount.nickname)
 }
 
 module.exports = {
