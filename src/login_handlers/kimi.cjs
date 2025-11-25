@@ -41,7 +41,7 @@ async function doLogin(page, aiAccount) {
         const base64Data = await canvas.screenshot({encoding: 'base64'});
         console.log(`\u001b]1337;File=name=screenshot.png;inline=1:${base64Data}\u0007`);
 
-        await waitSafe(60000);
+        await waitSafe(page, 60000);
         await page.reload({waitUntil: 'networkidle2'});
 
         return checkLogin(page, aiAccount.nickname);
