@@ -15,7 +15,7 @@ async function checkLogin(page, nickname = "") {
     console.log("nickname:", nicknameText);
 
     if (nicknameText && nicknameText.trim() === nickname) {
-        console.log("nicknameText");
+        console.log("登录信息匹配成功");
         return true;
     }
 
@@ -30,7 +30,7 @@ async function doLogin(page, aiAccount) {
     const loginBtnEl = await waitForSelectorSafe(page, loginBtnSelector, {visible: true, timeout: 10000});
 
     if (!loginBtnEl) {
-        console.log("为查找到登录按钮，可能已经登录，进行登录状态检查...");
+        console.log("未查找到登录按钮，可能已经登录，进行登录状态检查...");
         return checkLogin(page, aiAccount.nickname);
     } else {
         console.log("找到登录按钮，进行点击登录...");
