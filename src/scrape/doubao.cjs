@@ -45,7 +45,7 @@ async function action(page, taskDetail) {
     // 等待时间可以根据实际情况调整，或者或许改成判断某个元素出现更好
     //await waitSafe(page, 30000);
 
-    const sendBtnSelector = 'button[data-testid="chat_input_local_break_button"]';
+    const sendBtnSelector = 'div[data-testid="chat_input_local_break_button"]';
     const sendBtnEl = await waitForSelectorSafe(page, sendBtnSelector, {visible: true, timeout: 5000});
 
     if (!sendBtnEl) {
