@@ -5,7 +5,6 @@ const { executablePath } = require('puppeteer');
 
 puppeteer.use(StealthPlugin());
 
-
 async function createBrowser(options = {}) {
     return await puppeteer.launch({
         headless: options.headless,

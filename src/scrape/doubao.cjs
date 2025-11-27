@@ -4,7 +4,7 @@ const {AiAskDetailModel} = require('../models/index.cjs')
 async function action(page, taskDetailId, question) {
     console.log("开始 Doubao 抓取...");
 
-    // 获取新兑换的按钮
+    // 获取新对话的按钮
     const newChatSelector = 'div[data-testid="create_conversation_button"]';
     const newChatEl = await waitForSelectorSafe(page, newChatSelector, {visible: true, timeout: 5000});
 
