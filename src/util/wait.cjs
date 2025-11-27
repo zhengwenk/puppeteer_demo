@@ -44,7 +44,14 @@ async function waitForClass(page, selector, className, options = {}) {
             return el && !el.classList.contains(className);
         };
 
-    return page.waitForFunction(condition, {timeout, polling});
+    try {
+        const waitEl = await page.waitForFunction(condition, {timeout, polling});
+        console.log(`元素 ${selector} 的 class "${className}" 已${appear ? '出现' : '消失'}`);
+        return waitEl
+    } catch (err) {
+        console.log(`等待元素 ${selector} 的 class "${className}" 变化超时: ${err.message}`);
+        return null;
+    }
 }
 
 module.exports = {
