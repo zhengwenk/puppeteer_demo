@@ -1,4 +1,8 @@
-const {TaskExecutePlanModel, AiAccountModel} = require('./models/index.cjs');
+const {
+    TaskExecutePlanModel,
+    AiAccountModel,
+    AiAskDetailModel
+} = require('./models/index.cjs');
 
 (async () => {
     try {
@@ -18,11 +22,16 @@ const {TaskExecutePlanModel, AiAccountModel} = require('./models/index.cjs');
         // const account = await AiAccountModel.findById(1);
         // console.log(account)
 
-        const now = new Date();           // 本地时间
-        const nowUTC = new Date(Date.now() - (new Date().getTimezoneOffset() * 60000));
-        console.log('Local Time:', now.toISOString());
-        console.log('UTC Time:', nowUTC.toISOString());
+        // const now = new Date();           // 本地时间
+        // const nowUTC = new Date(Date.now() - (new Date().getTimezoneOffset() * 60000));
+        // console.log('Local Time:', now.toISOString());
+        // console.log('UTC Time:', nowUTC.toISOString());
 
+        //const list = await AiAskDetailModel.find({ai_id:1, action_status: 0}, ['count(*) as c']);
+
+        const total = await AiAskDetailModel.count({});
+
+        console.log(total);
     } catch (err) {
         console.log(err);
     } finally {

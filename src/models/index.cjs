@@ -6,6 +6,7 @@ const {db} = require('../db/index.cjs'); // { query, pool }
  * @typedef {Object} ModelTypes
  * @property {import('./TaskExecutePlanModel.cjs')} TaskExecutePlanModel
  * @property {import('./AiAccountModel.cjs')} AiAccountModel
+ * @property {import('./AiAskDetailModel')} AiAskDetailModel
  */
 
 /** @type {ModelTypes} */

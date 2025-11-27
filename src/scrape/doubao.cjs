@@ -1,23 +1,29 @@
-const {waitForSelectorSafe, waitSafe} = require("../util/wait.cjs");
-async function action(page, question) {
+const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
+const {AiAskDetailModel} = require('../models/index.cjs')
+
+async function action(page, taskDetailId, question) {
     console.log("开始 Doubao 抓取...");
 
-    // 查找是否有登录按钮
-    const loginBtnSelector = 'button[data-testid="to_login_button"]';
-    const loginBtnEl = await waitForSelectorSafe(page, loginBtnSelector, { visible: true, timeout: 10000 })
+    // 获取新兑换的按钮
+    const newChatSelector = 'div[data-testid="create_conversation_button"]';
+    const newChatEl = await waitForSelectorSafe(page, newChatSelector, {visible: true, timeout: 5000});
 
-    // 通知登录态失效
-    if (loginBtnEl) {
-        //告警登录失效
-        return;
+    if (!newChatEl) {
+        console.log("获取新会话按钮失败");
+        return false;
     }
+
+    await newChatEl.click();
+    // 此处等待3秒，为了等待ui响应
+    await waitSafe(page, 3000);
+    console.log("点击新会话按钮");
 
     // 等待文本输入框元素出现（最多等 5 秒）
     const textSelector = 'textarea[data-testid="chat_input_input"]';
     const textEl = await waitForSelectorSafe(page, textSelector, { visible: true, timeout: 5000 });
 
     if (!textEl) {
-        //告警登录失效
+        console.log("获取文本输入框失败");
         return;
     }
 
@@ -33,11 +39,28 @@ async function action(page, question) {
     // 再点击发送按钮
     await page.click('#flow-end-msg-send');
 
+    // 此处等待3秒，为了等待ui响应
+    await waitSafe(3000);
+
     // 等待时间可以根据实际情况调整，或者或许改成判断某个元素出现更好
-    await waitSafe(page, 30000);
+    //await waitSafe(page, 30000);
+
+    const isComplete = await waitForClass(
+        page,
+        '[data-testid="chat_input_local_break_button"]',
+        '!hidden',
+        {
+            timeout: 60000
+        }
+    );
+
+    if (isComplete) {
+        console.log("回答超时")
+        return false;
+    }
 
     // 获取所有回答文本（最新那条）
-    const answer = await page.evaluate(() => {
+    const answerText = await page.evaluate(() => {
         console.log("start.....");
         const containers = [...document.querySelectorAll('.container-PvPoAn')];
 
@@ -53,8 +76,10 @@ async function action(page, question) {
         return parts.map(el => el.innerText.trim()).join("\n");
     });
 
-    console.log("AI 回复：", answer);
-    console.log('回答结束...');
+    if (answerText.length === 0) {
+        console.log("抓取答案内容为空")
+        return false;
+    }
 
     //查找参考资料区域
     const searchSelector = 'div[data-testid="search-reference-ui"]';
@@ -90,7 +115,17 @@ async function action(page, question) {
         });
     });
 
-    console.log(results);
+    if (results.length === 0) {
+        console.log("查找搜索参考失败");
+        return false;
+    }
+
+    await AiAskDetailModel.updateById(taskDetailId, {
+        answer: answerText,
+        search: JSON.stringify(results)
+    })
+
+    return true
 }
 
 module.exports = {

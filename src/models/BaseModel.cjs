@@ -14,6 +14,10 @@ class BaseModel {
         return true
     }
 
+    get hasSoftDelete() {
+        return true
+    }
+
     query(trx = null) {
         return trx ? trx(this.constructor.tableName) : this.db.table(this.constructor.tableName);
     }
@@ -51,6 +55,15 @@ class BaseModel {
         return this.delete({id}, trx);
     }
 
+    async deleteSoftById(id, trx = null) {
+        let data = {}
+        if (this.hasSoftDelete) {
+            data.data_status = 0
+        }
+
+        return this.updateById(id, data)
+    }
+
     async find(where = {}, columns = ['*'], options = {}, trx = null) {
         let qb = this.query(trx).select(columns);
 
@@ -81,14 +94,25 @@ class BaseModel {
 
     async findOne(where = {}, columns = ['*'], trx = null) {
         return this.query(trx)
-            .select(where, columns)
+            .select(columns)
+            .where(where)
             .first();
     }
 
     async findAll(where = {}, columns = ['*'], trx = null) {
         return this.query(trx)
-            .select(where, columns)
+            .select(columns)
             .where(where)
+    }
+
+    async count(where = {}, columns = "*", trx) {
+        const c = await this.query(trx).count(`${columns} as total`)
+
+        if (c.length > 0) {
+            return c[0].total
+        }
+
+        return 0;
     }
 
     async selectForUpdate(where = {}, trx = null, columns = ['*']) {
