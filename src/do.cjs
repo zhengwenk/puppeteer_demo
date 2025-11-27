@@ -36,6 +36,8 @@ const {AiAccountModel, AiAskDetailModel} = require("./models/index.cjs");
 
         browser = await createBrowser({
             headless: "new",
+            viewWidth: 2560,
+            viewHeight: 1440,
             userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${aiAccount.user_name}`,
         });
 

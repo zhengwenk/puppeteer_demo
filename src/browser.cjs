@@ -8,6 +8,10 @@ puppeteer.use(StealthPlugin());
 async function createBrowser(options = {}) {
     return await puppeteer.launch({
         headless: options.headless,
+        defaultViewport: {
+            width: options.viewWidth || 2560,
+            height: options.viewHeight || 1440,
+        },
         args: [
             '--start-maximized',
             '--no-sandbox',
