@@ -23,7 +23,11 @@ const {AiAccountModel, AiAskDetailModel} = require("./models/index.cjs");
         }
 
         // 获取问题总数
-        const list = await AiAskDetailModel.find({ai_id: 1, action_status: 0}, ['*'], {limit: 500});
+        const list = await AiAskDetailModel.find(
+            {ai_id: 1, action_status: 0},
+            ['*'],
+            {limit: 2}
+        );
 
         if (list.length === 0) {
             console.log(`未查找到需要处理的数据，channel: ${aiAccount.channel}`);
@@ -43,6 +47,7 @@ const {AiAccountModel, AiAskDetailModel} = require("./models/index.cjs");
         await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
 
         await asyncForEach(list, async (item, index) => {
+            console.log(`开始抓取:${item.id}`)
             await handler.action(page, item);
             // 增加请求的间隔
             await new Promise(r => setTimeout(r, randomInt(3000, 10000)));
