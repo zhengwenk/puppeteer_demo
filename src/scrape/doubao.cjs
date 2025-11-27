@@ -45,14 +45,10 @@ async function action(page, taskDetail) {
     // 等待时间可以根据实际情况调整，或者或许改成判断某个元素出现更好
     //await waitSafe(page, 30000);
 
-    const isComplete = await waitForClass(
-        page,
-        '[data-testid="chat_input_local_break_button"]',
-        '!hidden',
-        {
-            timeout: 60000
-        }
-    );
+    const isComplete = await page.waitForFunction(() => {
+        const btn = document.querySelector('[data-testid="chat_input_local_break_button"]');
+        return btn && btn.classList.contains('!hidden');
+    }, {timeout: 60000});
 
     if (isComplete) {
         console.log("回答超时")
