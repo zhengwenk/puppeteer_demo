@@ -1,7 +1,7 @@
 const handlers = require('./scrape/index.cjs');
 const {createBrowser} = require("./browser.cjs");
 const {asyncForEach} = require("./util/array.cjs");
-const {randomInt} = require("./util/math")
+const {randomInt} = require("./util/math.cjs")
 const {AiAccountModel, AiAskDetailModel} = require("./models/index.cjs");
 
 (async () => {
