@@ -1,7 +1,7 @@
 const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
 const {AiAskDetailModel} = require('../models/index.cjs')
 
-async function action(page, taskDetailId, question) {
+async function action(page, taskDetail) {
     console.log("开始 Doubao 抓取...");
 
     // 获取新对话的按钮
@@ -28,7 +28,7 @@ async function action(page, taskDetailId, question) {
     }
 
     await page.focus(textSelector);
-    await page.type(textSelector, question, { delay: 50 }); // delay 毫秒，可设为 0
+    await page.type(textSelector, taskDetail.question, {delay: 50}); // delay 毫秒，可设为 0
 
     // 鼠标移动模拟
     await page.mouse.move(200, 300);
@@ -120,7 +120,7 @@ async function action(page, taskDetailId, question) {
         return false;
     }
 
-    await AiAskDetailModel.updateById(taskDetailId, {
+    await AiAskDetailModel.updateById(taskDetail.id, {
         answer: answerText,
         search: JSON.stringify(results)
     })
