@@ -100,7 +100,7 @@ async function action(page, question) {
     await waitSafe(page, 3000)
 
     // 抓取参考资料列表
-    const results = await page.evaluate(() => {
+    const searchResults = await page.evaluate(() => {
         // 获取所有 data-testid="search-text-item" 的元素
         const items = [...document.querySelectorAll('[data-testid="search-text-item"]')];
 
@@ -120,11 +120,11 @@ async function action(page, question) {
         });
     });
 
-    if (results.length === 0) {
-        return {success: true, msg: "获取参考数据失败", result: {answer: answerText, search: []}};
+    if (searchResults.length === 0) {
+        return {success: true, msg: "获取参考数据失败", result: {answer: answerText, search: ""}};
     }
 
-    return {success: true, msg: "操作成功", result: {answer: answerText, search: JSON.stringify(results)}};
+    return {success: true, msg: "操作成功", result: {answer: answerText, search: JSON.stringify(searchResults)}};
 }
 
 module.exports = {
