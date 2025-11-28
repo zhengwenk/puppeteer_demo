@@ -27,6 +27,8 @@ async function action(page, question) {
     await page.focus(textSelector);
     await page.type(textSelector, question, {delay: 50}); // delay 毫秒，可设为 0
 
+    console.log(`questionText:${question}`);
+
     // 鼠标移动模拟
     await page.mouse.move(200, 300);
 
@@ -37,11 +39,11 @@ async function action(page, question) {
     await page.click('#flow-end-msg-send');
 
     // 此处等待3秒，为了等待ui响应.由于headless模式下不太稳定，改为等待更长时间
-    // await waitSafe(3000);
+    //await waitSafe(3000);
 
     // 等待时间可以根据实际情况调整，或者或许改成判断某个元素出现更好
     // 等待特定元素在headless模式下始终无法检测到变化，暂时还是固定等待60秒
-    await waitSafe(page, 60000);
+    await waitSafe(page, 30000);
 
     // const sendBtnSelector = 'div[data-testid="chat_input_local_break_button"]';
     // const sendBtnEl = await waitForSelectorSafe(page, sendBtnSelector, {visible: true, timeout: 5000});

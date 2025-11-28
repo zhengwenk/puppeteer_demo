@@ -43,7 +43,7 @@ const execOnceLimit = 100;
 
         const page = await browser.newPage();
         // 监听 浏览器的console
-        // page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+        page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
         // 打开目标页面
         await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
@@ -68,7 +68,7 @@ const execOnceLimit = 100;
                 if (!questionInfo) {
                     // 任务问题不存，标记为失败
                     console.log(`任务失败1`);
-                    await scrapeService.failTaskPlanById(item, resultId, "任务不存在");
+                    await scrapeService.failTaskPlan(item, resultId, "任务不存在");
                     return;
                 }
 
