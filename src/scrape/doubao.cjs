@@ -85,6 +85,8 @@ async function action(page, question) {
         return {success: false, msg: "获取回答内容失败"}
     }
 
+    console.log(answerText);
+
     //查找参考资料区域
     const searchSelector = 'div[data-testid="search-reference-ui"]';
     const searchEl = await waitForSelectorSafe(page, searchSelector, { visible: true, timeout: 5000 });

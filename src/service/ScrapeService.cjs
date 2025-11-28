@@ -56,14 +56,18 @@ class ScrapeService extends BaseService {
 
     // 完成任务计划
     async completeTaskPlan(taskPlanInfo, resultId, msg = "", result = {}) {
-
-        await TaskExecutePlanResultModel.updateById(resultId, {
+        const data = {
             execute_status: ScrapeService.executeStatusCompleted,
             end_time: Date.now(),
             execute_result: result.answer || "",
-            reference_links: result.search || "",
             execute_msg: msg,
-        });
+        }
+
+        if (result.search) {
+            data.reference_links = result.search
+        }
+
+        await TaskExecutePlanResultModel.updateById(resultId, data);
 
         await TaskExecutePlanModel.updateById(taskPlanInfo.id, {
             execute_status: ScrapeService.executeStatusCompleted,
