@@ -73,14 +73,16 @@ const execOnceLimit = 100;
             if (questionInfo && questionInfo.is_deleted === ScrapeService.question_status_deleted) {
                 // 任务问题已删除，标记为失败
                 console.log(`任务失败2`);
-                await scrapeService.failTaskPlanById(item, resultId, "问题已删除");
+                await scrapeService.failTaskPlan(item, resultId, "问题已删除");
                 return;
             }
 
-            const {isSuccess, msg, result} = await handler.action(page, questionInfo.question_content);
+            const {success, msg, result} = await handler.action(page, questionInfo.question_content);
 
-            if (isSuccess) {
-                await scrapeService.completeTaskPlanById(item, resultId, msg, result);
+            console.log(success, msg, result);
+
+            if (success) {
+                await scrapeService.completeTaskPlan(item, resultId, msg, result);
             }
 
             console.log(`任务成功, 等待下次任务......`);

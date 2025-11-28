@@ -29,7 +29,7 @@ class ScrapeService extends BaseService {
             ai_bot_id: aiBotId,
             execute_status: ScrapeService.executeStatusWaiting,
         }, ['id', 'question_id', 'task_id'], {
-            orderBy: ['id', 'desc'],
+            orderBy: ['id', 'asc'],
             limit: limit
         });
     }
@@ -55,7 +55,7 @@ class ScrapeService extends BaseService {
     }
 
     // 完成任务计划
-    async completeTaskPlanById(taskPlanInfo, resultId, msg = "", result = {}) {
+    async completeTaskPlan(taskPlanInfo, resultId, msg = "", result = {}) {
 
         await TaskExecutePlanResultModel.updateById(resultId, {
             execute_status: ScrapeService.executeStatusCompleted,
@@ -71,7 +71,7 @@ class ScrapeService extends BaseService {
     }
 
     // 失败任务计划
-    async failTaskPlanById(taskPlan, resultId, msg) {
+    async failTaskPlan(taskPlan, resultId, msg) {
 
         await TaskExecutePlanResultModel.updateById(resultId, {
             execute_status: ScrapeService.executeStatusFailed,
