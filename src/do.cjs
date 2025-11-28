@@ -66,7 +66,7 @@ const execOnceLimit = 100;
                 return;
             }
 
-            if (questionInfo.is_deleted !== ScrapeService.question_status_normal) {
+            if (questionInfo && questionInfo.is_deleted === ScrapeService.question_status_deleted) {
                 // 任务问题已删除，标记为失败
                 await scrapeService.failTaskPlanById(item, resultId, "问题已删除");
                 return;

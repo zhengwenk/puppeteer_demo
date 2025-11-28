@@ -86,7 +86,11 @@ class ScrapeService extends BaseService {
         return true
     }
 
-    // 获取任务计划对应的问题详情
+    /**
+     * 获取任务计划对应的问题详情
+     * @param {number} questionId - 问题 ID
+     * @returns {Promise<{id: number, question_content: string, is_deleted: number}|null>}
+     */
     async getTaskPlanQuestionById(questionId) {
         return TaskExpandQuestionModel.findById(questionId)
     }
