@@ -36,8 +36,18 @@ const {
         //     limit: 5
         // })
         // console.log(list);
-        const r = await TaskExecutePlanModel.updateById(3, {execute_status: 4});
-        console.log(r);
+
+        const list = await TaskExecutePlanModel.find(
+            {ai_bot_id: 1},
+            ['*'],
+            {
+                limit: 10
+            }
+        );
+
+        const question = await TaskExpandQuestionModel.findById(1)
+
+        console.log(list);
 
 
     } catch (err) {
