@@ -36,17 +36,20 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
             '--disable-setuid-sandbox',
             '--disable-dev-shm-usage',
             // 常用以减少 headless 标志的线索（并非万无一失）
-            '--disable-blink-features=AutomationControlled'
+            '--disable-blink-features=AutomationControlled',
+            '--disable-gpu',
         ],
-        //executablePath: executablePath(), // 指向系统 Chrome（可替换为你的 Chrome 路径）
+        executablePath: executablePath(), // 指向系统 Chrome（可替换为你的 Chrome 路径）
         userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + "/zhengwenkai",
     });
 
     // 打开新的页面
     const page = await browser.newPage();
 
+    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+
     const targetUrl = "https://www.doubao.com/chat/";
-    await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 30000});
+    await page.goto(targetUrl, {waitUntil: 'networkidle0', timeout: 20000});
 
     const loginBtnSelector = 'button[data-testid="to_login_button"]';
     const loginBtnEl = await waitForSelectorSafe(page, loginBtnSelector, {visible: true, timeout: 10000});
@@ -76,6 +79,10 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
 
     // 再点击发送按钮
     await page.click('#flow-end-msg-send');
+
+    await waitSafe(page, 5000);
+
+    await page.screenshot({path: 'screenshot.png'});
 
     await waitSafe(page, 30000);
 
