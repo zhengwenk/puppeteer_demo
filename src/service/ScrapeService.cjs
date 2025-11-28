@@ -60,7 +60,7 @@ class ScrapeService extends BaseService {
         await TaskExecutePlanResultModel.updateById(resultId, {
             execute_status: ScrapeService.executeStatusCompleted,
             end_time: Date.now(),
-            result_content: result.answer || "",
+            execute_result: result.answer || "",
             reference_links: result.search || "",
             execute_msg: msg,
         });
