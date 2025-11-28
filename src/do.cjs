@@ -51,6 +51,7 @@ const execOnceLimit = 100;
         //
         await asyncForEach(list, async (item, index) => {
             // 开始任务
+            console.log(`开始处理任务, 任务ID: ${item.id}`);
             const resultId = await scrapeService.startTaskPlan(item)
 
             if (resultId <= 0) {
@@ -58,16 +59,20 @@ const execOnceLimit = 100;
                 return
             }
 
+            console.log(`任务开启成功`);
+
             const questionInfo = await scrapeService.getTaskPlanQuestionById(item.question_id);
 
             if (!questionInfo) {
                 // 任务问题不存，标记为失败
+                console.log(`任务失败1`);
                 await scrapeService.failTaskPlanById(item, resultId, "任务不存在");
                 return;
             }
 
             if (questionInfo && questionInfo.is_deleted === ScrapeService.question_status_deleted) {
                 // 任务问题已删除，标记为失败
+                console.log(`任务失败2`);
                 await scrapeService.failTaskPlanById(item, resultId, "问题已删除");
                 return;
             }
@@ -77,6 +82,8 @@ const execOnceLimit = 100;
             if (isSuccess) {
                 await scrapeService.completeTaskPlanById(item, resultId, msg, result);
             }
+
+            console.log(`任务成功, 等待下次任务......`);
 
             // 增加请求的间隔
             await new Promise(r => setTimeout(r, randomInt(3000, 10000)));
