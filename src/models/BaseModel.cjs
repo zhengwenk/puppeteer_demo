@@ -1,3 +1,5 @@
+const {timestamp} = require('../util/date.cjs');
+
 class BaseModel {
     static tableName
 
@@ -25,7 +27,7 @@ class BaseModel {
     async create(data, trx = null) {
 
         if (this.hasTimestamps) {
-            const nowTs = Date.now();
+            const nowTs = timestamp()
             data.create_ts = nowTs;
             data.update_ts = nowTs;
         }
@@ -37,7 +39,7 @@ class BaseModel {
     async update(where, data, trx = null) {
 
         if (this.hasTimestamps) {
-            data.update_ts = Date.now();
+            data.update_ts = timestamp()
         }
 
         return this.query(trx).where(where).update(data);
