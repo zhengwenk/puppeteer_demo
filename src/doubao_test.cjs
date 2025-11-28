@@ -62,9 +62,10 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
         await page.focus(textSelector);
         const textToType = '我想去泰国，给我一个详细攻略。一家三口。'; // 输入内容
         await page.type(textSelector, textToType, {delay: 50}); // delay 毫秒，可设为 0
+        await waitSafe(page, 3000);
     }
 
-    await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot1.png'});
+    //await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot1.png'});
 
     // 鼠标移动模拟
     await page.mouse.move(200, 300);
@@ -75,33 +76,33 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     // 再点击发送按钮
     await page.click('#flow-end-msg-send');
 
-    await waitSafe(page, 10000);
+    //await waitSafe(page, 10000);
 
-    await page.mouse.move(200, 300);
+    // await page.mouse.move(200, 300);
+    //
+    // // 获取当前视口的宽度和高度
+    // const {width, height} = await page.evaluate(() => {
+    //     return {
+    //         width: document.documentElement.clientWidth,
+    //         height: document.documentElement.clientHeight,
+    //     };
+    // });
 
-    // 获取当前视口的宽度和高度
-    const {width, height} = await page.evaluate(() => {
-        return {
-            width: document.documentElement.clientWidth,
-            height: document.documentElement.clientHeight,
-        };
-    });
+    // // 计算一个点击坐标，例如点击页面中心附近
+    // // Puppeteer 的坐标是相对于视口左上角 (0, 0) 的 CSS 像素
+    // const clickX = Math.floor(width / 2); // 屏幕宽度的一半
+    // const clickY = Math.floor(height / 2); // 屏幕高度的一半
+    // console.log(`点击坐标: (${clickX}, ${clickY})`);
+    // // 模拟鼠标点击这个坐标
+    // await page.mouse.click(clickX, clickY);
+    //
+    // await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot2.png'});
 
-    // 计算一个点击坐标，例如点击页面中心附近
-    // Puppeteer 的坐标是相对于视口左上角 (0, 0) 的 CSS 像素
-    const clickX = Math.floor(width / 2); // 屏幕宽度的一半
-    const clickY = Math.floor(height / 2); // 屏幕高度的一半
-    console.log(`点击坐标: (${clickX}, ${clickY})`);
-    // 模拟鼠标点击这个坐标
-    await page.mouse.click(clickX, clickY);
+    await waitSafe(page, 20000);
 
-    await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot2.png'});
+    //await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot3.png'});
 
-    await waitSafe(page, 30000);
-
-    await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot3.png'});
-
-    return;
+    //return;
     console.log('回答结束,开始获取内容');
 
     // 获取所有回答文本（最新那条）
