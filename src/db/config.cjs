@@ -10,7 +10,8 @@ switch (env) {
                 host: 'localhost',
                 user: 'root',
                 password: '',
-                database: 'dev'
+                database: 'dev',
+                timezone: '+08:00',
             },
             pool: {
                 min: 0,
@@ -26,7 +27,7 @@ switch (env) {
                 user: 'root',
                 password: 'dotdy4-Torsoz-rumsan',
                 database: 'my_dev',
-                timezone: 'Asia/Shanghai',
+                timezone: '+08:00',
             },
             pool: {
                 min: 0,
@@ -41,7 +42,8 @@ switch (env) {
                 host: 'localhost',
                 user: 'root',
                 password: '',
-                database: 'dev'
+                database: 'dev',
+                timezone: '+08:00',
             },
             pool: {
                 min: 0,

@@ -52,45 +52,58 @@ const execOnceLimit = 100;
         await asyncForEach(list, async (item, index) => {
             // 开始任务
             console.log(`开始处理任务, 任务ID: ${item.id}`);
-            const resultId = await scrapeService.startTaskPlan(item)
 
-            if (resultId <= 0) {
-                console.log(`任务开始失败，任务ID: ${item.id}`);
-                return
+            try {
+                const resultId = await scrapeService.startTaskPlan(item)
+
+                if (resultId <= 0) {
+                    console.log(`任务开始失败，任务ID: ${item.id}`);
+                    return
+                }
+
+                console.log(`任务开启成功`);
+
+                const questionInfo = await scrapeService.getTaskPlanQuestionById(item.question_id);
+
+                if (!questionInfo) {
+                    // 任务问题不存，标记为失败
+                    console.log(`任务失败1`);
+                    await scrapeService.failTaskPlanById(item, resultId, "任务不存在");
+                    return;
+                }
+
+                if (questionInfo && questionInfo.is_deleted === ScrapeService.question_status_deleted) {
+                    // 任务问题已删除，标记为失败
+                    console.log(`任务失败2`);
+                    await scrapeService.failTaskPlan(item, resultId, "问题已删除");
+                    return;
+                }
+
+                const {success, msg, result} = await handler.action(page, questionInfo.question_content);
+
+                console.log(success, msg, result);
+
+                if (success) {
+                    await scrapeService.completeTaskPlan(item, resultId, msg, result);
+                }
+
+                console.log(`任务成功, 等待下次任务......`);
+
+                // 增加请求的间隔
+                await new Promise(r => setTimeout(r, randomInt(3000, 10000)));
+            } catch (err) {
+                console.error("\n--- 程序发生致命错误 ---");
+                console.error("错误详情:", err.message);
+                console.error("--------------------------\n");
+                if (err.stack) {
+                    console.error("堆栈跟踪:", err.stack);
+                } else {
+                    // 如果 error 对象没有 stack 属性 (例如它只是一个简单的字符串拒绝)，
+                    // 也可以直接输出完整的 error 对象
+                    console.error("完整错误对象:", err);
+                }
             }
-
-            console.log(`任务开启成功`);
-
-            const questionInfo = await scrapeService.getTaskPlanQuestionById(item.question_id);
-
-            if (!questionInfo) {
-                // 任务问题不存，标记为失败
-                console.log(`任务失败1`);
-                await scrapeService.failTaskPlanById(item, resultId, "任务不存在");
-                return;
-            }
-
-            if (questionInfo && questionInfo.is_deleted === ScrapeService.question_status_deleted) {
-                // 任务问题已删除，标记为失败
-                console.log(`任务失败2`);
-                await scrapeService.failTaskPlan(item, resultId, "问题已删除");
-                return;
-            }
-
-            const {success, msg, result} = await handler.action(page, questionInfo.question_content);
-
-            console.log(success, msg, result);
-
-            if (success) {
-                await scrapeService.completeTaskPlan(item, resultId, msg, result);
-            }
-
-            console.log(`任务成功, 等待下次任务......`);
-
-            // 增加请求的间隔
-            await new Promise(r => setTimeout(r, randomInt(3000, 10000)));
         });
-
     } catch (error) {
         // 捕获所有 Promise 拒绝和同步错误
         console.error("\n--- 程序发生致命错误 ---");

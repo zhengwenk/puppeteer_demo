@@ -124,7 +124,7 @@ async function action(page, question) {
         return {success: true, msg: "获取参考数据失败", result: {answer: answerText, search: []}};
     }
 
-    return {success: true, msg: "操作成功", result: {answer: answerText, search: results}};
+    return {success: true, msg: "操作成功", result: {answer: answerText, search: JSON.stringify(results)}};
 }
 
 module.exports = {
