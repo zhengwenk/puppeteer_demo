@@ -94,7 +94,7 @@ async function action(page, question) {
     if (!searchEl) {
         //console.log("未找到搜索结果");
         // 如果没获取到参考资料区域，也更算是成功。
-        return {success: true, msg: "没有参考数据", result: {answer: answerText, search: []}};
+        return {success: true, msg: "没有参考数据", result: {answer: answerText, search: ""}};
     }
 
     // 点击等待右边列表展开

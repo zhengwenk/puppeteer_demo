@@ -63,7 +63,7 @@ class ScrapeService extends BaseService {
             execute_msg: msg,
         }
 
-        if (result.search) {
+        if (result.search !== "") {
             data.reference_links = result.search
         }
 
