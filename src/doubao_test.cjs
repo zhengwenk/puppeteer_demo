@@ -71,7 +71,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
         await page.type(textSelector, textToType, {delay: 50}); // delay 毫秒，可设为 0
     }
 
-    await page.screenshot({path: 'screenshot1.png'});
+    await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot1.png'});
 
     // 鼠标移动模拟
     await page.mouse.move(200, 300);
@@ -84,7 +84,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
 
     await waitSafe(page, 5000);
 
-    await page.screenshot({path: 'screenshot2.png'});
+    await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot2.png'});
 
     await waitSafe(page, 30000);
 
