@@ -5,16 +5,14 @@ async function action(page, question) {
     const newChatSelector = 'div[data-testid="create_conversation_button"]';
     const newChatEl = await waitForSelectorSafe(page, newChatSelector, {visible: true, timeout: 5000});
 
-    let msg = "";
-
     if (!newChatEl) {
         return {success: false, msg: "获取新会话按钮失败"}
     }
 
-    await newChatEl.click();
-    // 此处等待3秒，为了等待ui响应
-    await waitSafe(page, 3000);
-    console.log("点击新会话按钮");
+    await Promise.all([
+        page.waitForNavigation({waitUntil: 'domcontentloaded'}),
+        page.click(newChatSelector)
+    ]);
 
     // 等待文本输入框元素出现（最多等 5 秒）
     const textSelector = 'textarea[data-testid="chat_input_input"]';
