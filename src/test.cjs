@@ -47,7 +47,7 @@ const {
 
         const question = await TaskExpandQuestionModel.findById(1)
 
-        console.log(list);
+        console.log(list, question);
 
 
     } catch (err) {
