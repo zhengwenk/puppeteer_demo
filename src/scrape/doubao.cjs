@@ -1,16 +1,14 @@
 const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
-const {AiAskDetailModel} = require('../models/index.cjs')
 
-async function action(page, taskDetail) {
-    console.log("开始 Doubao 抓取...");
-
+async function action(page, question) {
     // 获取新对话的按钮
     const newChatSelector = 'div[data-testid="create_conversation_button"]';
     const newChatEl = await waitForSelectorSafe(page, newChatSelector, {visible: true, timeout: 5000});
 
+    let msg = "";
+
     if (!newChatEl) {
-        console.log("获取新会话按钮失败");
-        return false;
+        return {success: false, msg: "获取新会话按钮失败"}
     }
 
     await newChatEl.click();
@@ -23,12 +21,11 @@ async function action(page, taskDetail) {
     const textEl = await waitForSelectorSafe(page, textSelector, { visible: true, timeout: 5000 });
 
     if (!textEl) {
-        console.log("获取文本输入框失败");
-        return;
+        return {success: false, msg: "获取文本框失败"}
     }
 
     await page.focus(textSelector);
-    await page.type(textSelector, taskDetail.question, {delay: 50}); // delay 毫秒，可设为 0
+    await page.type(textSelector, question, {delay: 50}); // delay 毫秒，可设为 0
 
     // 鼠标移动模拟
     await page.mouse.move(200, 300);
@@ -39,32 +36,33 @@ async function action(page, taskDetail) {
     // 再点击发送按钮
     await page.click('#flow-end-msg-send');
 
-    // 此处等待3秒，为了等待ui响应
-    await waitSafe(3000);
+    // 此处等待3秒，为了等待ui响应.由于headless模式下不太稳定，改为等待更长时间
+    // await waitSafe(3000);
 
     // 等待时间可以根据实际情况调整，或者或许改成判断某个元素出现更好
-    //await waitSafe(page, 30000);
+    // 等待特定元素在headless模式下始终无法检测到变化，暂时还是固定等待60秒
+    await waitSafe(page, 60000);
 
-    const sendBtnSelector = 'div[data-testid="chat_input_local_break_button"]';
-    const sendBtnEl = await waitForSelectorSafe(page, sendBtnSelector, {visible: true, timeout: 5000});
+    // const sendBtnSelector = 'div[data-testid="chat_input_local_break_button"]';
+    // const sendBtnEl = await waitForSelectorSafe(page, sendBtnSelector, {visible: true, timeout: 5000});
+    //
+    // if (!sendBtnEl) {
+    //     console.log("获取发送按钮失败");
+    //     return false;
+    // }
+    //
+    // // 等待回答完成（发送按钮出现 !hidden 类）
+    // const isComplete = await waitForClass(
+    //     page,
+    //     sendBtnSelector,
+    //     '!hidden',
+    //     {timeout: 120000}
+    // );
 
-    if (!sendBtnEl) {
-        console.log("获取发送按钮失败");
-        return false;
-    }
-
-    // 等待回答完成（发送按钮出现 !hidden 类）
-    const isComplete = await waitForClass(
-        page,
-        sendBtnSelector,
-        '!hidden',
-        {timeout: 120000}
-    );
-
-    if (isComplete) {
-        console.log("回答超时")
-        return false;
-    }
+    // if (isComplete) {
+    //     console.log("回答超时")
+    //     return false;
+    // }
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
@@ -84,8 +82,7 @@ async function action(page, taskDetail) {
     });
 
     if (answerText.length === 0) {
-        console.log("抓取答案内容为空")
-        return false;
+        return {success: false, msg: "获取回答内容失败"}
     }
 
     //查找参考资料区域
@@ -93,8 +90,9 @@ async function action(page, taskDetail) {
     const searchEl = await waitForSelectorSafe(page, searchSelector, { visible: true, timeout: 5000 });
 
     if (!searchEl) {
-        console.log("未找到搜索结果");
-        return;
+        //console.log("未找到搜索结果");
+        // 如果没获取到参考资料区域，也更算是成功。
+        return {success: true, msg: "没有参考数据", result: {answer: answerText, search: []}};
     }
 
     // 点击等待右边列表展开
@@ -123,16 +121,10 @@ async function action(page, taskDetail) {
     });
 
     if (results.length === 0) {
-        console.log("查找搜索参考失败");
-        return false;
+        return {success: true, msg: "获取参考数据失败", result: {answer: answerText, search: []}};
     }
 
-    await AiAskDetailModel.updateById(taskDetail.id, {
-        answer: answerText,
-        search: JSON.stringify(results)
-    })
-
-    return true
+    return {success: true, msg: "操作成功", result: {answer: answerText, search: results}};
 }
 
 module.exports = {

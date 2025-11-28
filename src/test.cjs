@@ -1,7 +1,7 @@
 const {
     TaskExecutePlanModel,
     AiAccountModel,
-    AiAskDetailModel
+    TaskExpandQuestionModel,
 } = require('./models/index.cjs');
 
 (async () => {
@@ -28,10 +28,18 @@ const {
         // console.log('UTC Time:', nowUTC.toISOString());
 
         //const list = await AiAskDetailModel.find({ai_id:1, action_status: 0}, ['count(*) as c']);
+        // const list = await TaskExecutePlanModel.find({
+        //     ai_bot_id: 1,
+        //     execute_status:1,
+        // }, ['id', 'question_id', 'task_id'], {
+        //     orderBy: ['id', 'desc'],
+        //     limit: 5
+        // })
+        // console.log(list);
+        const r = await TaskExecutePlanModel.updateById(3, {execute_status: 4});
+        console.log(r);
 
-        const total = await AiAskDetailModel.count({});
 
-        console.log(total);
     } catch (err) {
         console.log(err);
     } finally {

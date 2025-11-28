@@ -8,9 +8,7 @@ async function waitSafe(page, ms) {
 
 async function waitForSelectorSafe(page, selector, options = { timeout: 5000 }) {
     try {
-        const el = await page.waitForSelector(selector, options);
-        console.log(`找到元素: ${selector}`);
-        return el;
+        return await page.waitForSelector(selector, options);
     } catch (err) {
         console.log(`未找到元素: ${selector}，原因: ${err.message}`);
         return null;

@@ -25,9 +25,9 @@ class BaseModel {
     async create(data, trx = null) {
 
         if (this.hasTimestamps) {
-            const now = new Date();
-            data.created_at = now;
-            data.updated_at = now;
+            const nowTs = Date.now();
+            data.create_ts = nowTs;
+            data.update_ts = nowTs;
         }
 
         const [id] = await this.query(trx).insert(data);
@@ -37,7 +37,7 @@ class BaseModel {
     async update(where, data, trx = null) {
 
         if (this.hasTimestamps) {
-            data.updated_at = new Date();
+            data.update_ts = Date.now();
         }
 
         return this.query(trx).where(where).update(data);

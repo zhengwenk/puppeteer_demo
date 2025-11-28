@@ -2,15 +2,19 @@ const handlers = require('./scrape/index.cjs');
 const {createBrowser} = require("./browser.cjs");
 const {asyncForEach} = require("./util/array.cjs");
 const {randomInt} = require("./util/math.cjs")
-const {AiAccountModel, AiAskDetailModel} = require("./models/index.cjs");
+const ScrapeService = require("./service/ScrapeService.cjs");
+
+const execOnceLimit = 100;
 
 (async () => {
-    let browser
+    let browser;
+    const scrapeService = new ScrapeService();
+
     try {
         // 获取环境变量确定是那个账号id
-        const inputId = Number(process.env.Ai_ACCOUNT_ID);
-        const aiAccount = await AiAccountModel.findById(inputId);
-        if (!aiAccount || aiAccount.id !== inputId) {
+        const inputAccountId = Number(process.env.Ai_ACCOUNT_ID);
+        const aiAccount = await scrapeService.getAiBotById(inputAccountId);
+        if (!aiAccount) {
             console.error(`未找到对应的AI账号，ID: ${process.env.Ai_ACCOUNT_ID}`);
             return false;
         }
@@ -22,12 +26,8 @@ const {AiAccountModel, AiAskDetailModel} = require("./models/index.cjs");
             return false;
         }
 
-        // 获取问题总数
-        const list = await AiAskDetailModel.find(
-            {ai_id: 1, action_status: 0},
-            ['*'],
-            {limit: 2}
-        );
+        // 获取任务执行计划
+        const list = await scrapeService.getTaskPlanList(aiAccount.id, execOnceLimit);
 
         if (list.length === 0) {
             console.log(`未查找到需要处理的数据，channel: ${aiAccount.channel}`);
@@ -43,14 +43,41 @@ const {AiAccountModel, AiAskDetailModel} = require("./models/index.cjs");
 
         const page = await browser.newPage();
         // 监听 浏览器的console
-        page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+        // page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
         // 打开目标页面
         await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
 
+        //
         await asyncForEach(list, async (item, index) => {
-            console.log(`开始抓取:${item.id}`)
-            await handler.action(page, item);
+            // 开始任务
+            const resultId = await scrapeService.startTaskPlan(item)
+
+            if (resultId <= 0) {
+                console.log(`任务开始失败，任务ID: ${item.id}`);
+                return
+            }
+
+            const questionInfo = await scrapeService.getTaskPlanQuestionById(item.question_id);
+
+            if (!questionInfo) {
+                // 任务问题不存，标记为失败
+                await scrapeService.failTaskPlanById(item, resultId, "任务不存在");
+                return;
+            }
+
+            if (questionInfo.is_deleted !== ScrapeService.question_status_normal) {
+                // 任务问题已删除，标记为失败
+                await scrapeService.failTaskPlanById(item, resultId, "问题已删除");
+                return;
+            }
+
+            const {isSuccess, msg, result} = await handler.action(page, questionInfo.question_content);
+
+            if (isSuccess) {
+                await scrapeService.completeTaskPlanById(item, resultId, msg, result);
+            }
+
             // 增加请求的间隔
             await new Promise(r => setTimeout(r, randomInt(3000, 10000)));
         });
@@ -67,12 +94,13 @@ const {AiAccountModel, AiAskDetailModel} = require("./models/index.cjs");
             // 也可以直接输出完整的 error 对象
             console.error("完整错误对象:", error);
         }
-
     } finally {
         // 无论如何，确保浏览器被关闭
         if (browser) {
             await browser.close();
             console.log("浏览器已关闭。");
         }
+
+        await scrapeService.destroyDB()
     }
 })();
