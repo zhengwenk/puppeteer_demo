@@ -38,6 +38,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
             // 常用以减少 headless 标志的线索（并非万无一失）
             '--disable-blink-features=AutomationControlled',
             '--disable-gpu',
+            '--proxy-server=http://114.80.161.92:50000'
         ],
         executablePath: executablePath(), // 指向系统 Chrome（可替换为你的 Chrome 路径）
         userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + "/zhengwenkai",
