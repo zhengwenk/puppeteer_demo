@@ -9,8 +9,10 @@ async function createBrowser(options = {}) {
     return await puppeteer.launch({
         headless: options.headless,
         defaultViewport: {
-            width: options.viewWidth || 2560,
-            height: options.viewHeight || 1440,
+            width: 1512,          // 逻辑视口宽度 (Mac 默认缩放)
+            height: 982,         // 逻辑视口高度 (Mac 默认缩放)
+            deviceScaleFactor: 2, // 启用 HiDPI 渲染
+            isMobile: false
         },
         args: [
             '--start-maximized',

@@ -46,6 +46,7 @@ const execOnceLimit = 100;
         page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
         // 打开目标页面
+        console.log(aiAccount.url);
         await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
 
         //
