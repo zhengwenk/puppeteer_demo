@@ -49,7 +49,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
     const targetUrl = "https://www.doubao.com/chat/";
-    await page.goto(targetUrl, {waitUntil: 'networkidle0', timeout: 20000});
+    await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
 
     const loginBtnSelector = 'button[data-testid="to_login_button"]';
     const loginBtnEl = await waitForSelectorSafe(page, loginBtnSelector, {visible: true, timeout: 10000});
@@ -71,6 +71,8 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
         await page.type(textSelector, textToType, {delay: 50}); // delay 毫秒，可设为 0
     }
 
+    await page.screenshot({path: 'screenshot1.png'});
+
     // 鼠标移动模拟
     await page.mouse.move(200, 300);
 
@@ -82,7 +84,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
 
     await waitSafe(page, 5000);
 
-    await page.screenshot({path: 'screenshot.png'});
+    await page.screenshot({path: 'screenshot2.png'});
 
     await waitSafe(page, 30000);
 
