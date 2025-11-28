@@ -60,7 +60,7 @@ class ScrapeService extends BaseService {
             execute_status: ScrapeService.executeStatusCompleted,
             end_time: Date.now(),
             execute_result: result.answer || "",
-            execute_msg: msg,
+            execute_error_msg: msg,
         }
 
         if (result.search !== "") {

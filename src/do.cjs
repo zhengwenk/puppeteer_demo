@@ -47,12 +47,10 @@ const execOnceLimit = 100;
 
         // 打开目标页面
         console.log(aiAccount.url);
-        await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
-
-        //
         await asyncForEach(list, async (item, index) => {
             // 开始任务
             console.log(`开始处理任务, 任务ID: ${item.id}`);
+
 
             try {
                 const resultId = await scrapeService.startTaskPlan(item)
@@ -80,6 +78,7 @@ const execOnceLimit = 100;
                     return;
                 }
 
+                await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
                 const {success, msg, result} = await handler.action(page, questionInfo.question_content);
 
                 console.log(success, msg, result);
