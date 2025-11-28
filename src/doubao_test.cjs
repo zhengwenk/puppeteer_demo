@@ -38,10 +38,10 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
             // 常用以减少 headless 标志的线索（并非万无一失）
             '--disable-blink-features=AutomationControlled',
             '--disable-gpu',
-            '--proxy-server=http://114.80.161.93:62000'
+            //'--proxy-server=http://114.80.161.93:62000'
         ],
         executablePath: executablePath(), // 指向系统 Chrome（可替换为你的 Chrome 路径）
-        userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + "/zhengwenkai",
+        userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + "/abc",
     });
 
     // 打开新的页面
@@ -51,14 +51,6 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
 
     const targetUrl = "https://www.doubao.com/chat/";
     await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
-
-    const loginBtnSelector = 'button[data-testid="to_login_button"]';
-    const loginBtnEl = await waitForSelectorSafe(page, loginBtnSelector, {visible: true, timeout: 10000});
-
-    if (loginBtnEl) {
-        //告警登录失效
-        return;
-    }
 
     // 等待文本输入框元素出现（最多等 10秒）
     const textSelector = 'textarea[data-testid="chat_input_input"]';
