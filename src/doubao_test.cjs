@@ -37,7 +37,6 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
             '--disable-dev-shm-usage',
             // 常用以减少 headless 标志的线索（并非万无一失）
             '--disable-blink-features=AutomationControlled',
-            '--disable-gpu',
             //'--proxy-server=http://114.80.161.93:62000'
         ],
         executablePath: executablePath(), // 指向系统 Chrome（可替换为你的 Chrome 路径）
@@ -60,7 +59,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     if (textEl) {
         // 可选：聚焦并清空（如果已有默认内容）
         await page.focus(textSelector);
-        const textToType = '我想去泰国，给我一个详细攻略。一家三口。'; // 输入内容
+        const textToType = '我想去韩国，给我一个详细攻略。一家四口。'; // 输入内容
         await page.type(textSelector, textToType, {delay: 50}); // delay 毫秒，可设为 0
         await waitSafe(page, 3000);
     }
