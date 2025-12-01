@@ -1,5 +1,5 @@
 const handlers = require('./scrape/index.cjs');
-const {createBrowser} = require("./browser.cjs");
+const {createBrowser, createPage} = require("./browser.cjs");
 const {asyncForEach} = require("./util/array.cjs");
 const {randomInt} = require("./util/math.cjs")
 const ScrapeService = require("./service/ScrapeService.cjs");
@@ -67,19 +67,17 @@ const execOnceLimit = 100;
 
                 browser = await createBrowser({
                     headless: "new",
-                    viewWidth: 1440,
-                    viewHeight: 900,
                     userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${aiAccount.user_name}`,
                 });
 
-                const page = await browser.newPage();
+                const page = await createPage(browser);
                 // 监听 浏览器的console
                 //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
                 // 打开目标页面
                 console.log(aiAccount.url);
 
-                await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
+                await page.goto(aiAccount.url, {waitUntil: 'networkidle0', timeout: 60 * 1000});
 
 
                 const {success, msg, result} = await handler.action(page, questionInfo);

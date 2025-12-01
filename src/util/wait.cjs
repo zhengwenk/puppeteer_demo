@@ -52,8 +52,36 @@ async function waitForClass(page, selector, className, options = {}) {
     }
 }
 
+async function realClick(page, selector) {
+    const el = await page.waitForSelector(selector, {visible: true});
+
+    const box = await el.boundingBox();
+    if (!box) return;
+
+    // 移到元素中间位置，模拟真实轨迹
+    await page.mouse.move(
+        box.x + box.width / 2,
+        box.y + box.height / 2,
+        {steps: 25}
+    );
+
+    await page.mouse.down();
+    await waitSafe(page, 50 + Math.random() * 100);
+    await page.mouse.up();
+}
+
+async function humanType(page, selector, text) {
+    await page.focus(selector);
+
+    for (const char of text) {
+        await page.keyboard.type(char, {delay: 30 + Math.random() * 80});
+    }
+}
+
 module.exports = {
     waitSafe,
     waitForSelectorSafe,
-    waitForClass
+    waitForClass,
+    realClick,
+    humanType
 };

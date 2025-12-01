@@ -1,4 +1,7 @@
-const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
+const {
+    waitForSelectorSafe, waitSafe, waitForClass,
+    realClick, humanType
+} = require("../util/wait.cjs");
 
 async function action(page, item) {
     // //获取新对话的按钮
@@ -22,9 +25,7 @@ async function action(page, item) {
         return {success: false, msg: "获取文本框失败"}
     }
 
-    await page.focus(textSelector);
-    await page.type(textSelector, item.question_content, {delay: 50}); // delay 毫秒，可设为 0
-
+    await humanType(page, textSelector, item.question_content);
     console.log(`questionText:${item.question_content}`);
 
     // 鼠标移动模拟
@@ -34,7 +35,7 @@ async function action(page, item) {
     await page.evaluate(() => window.scrollBy(0, 400));
 
     // 再点击发送按钮
-    await page.click('#flow-end-msg-send');
+    await realClick(page, '#flow-end-msg-send');
 
     // 此处等待3秒，为了等待ui响应.由于headless模式下不太稳定，改为等待更长时间
     //await waitSafe(3000);
