@@ -90,6 +90,8 @@ const execOnceLimit = 100;
                     await scrapeService.completeTaskPlan(item, resultId, msg, result);
                 }
 
+                await browser.close();
+
                 console.log(`任务成功, 等待下次任务......`);
 
                 // 增加请求的间隔
@@ -104,6 +106,11 @@ const execOnceLimit = 100;
                     // 如果 error 对象没有 stack 属性 (例如它只是一个简单的字符串拒绝)，
                     // 也可以直接输出完整的 error 对象
                     console.error("完整错误对象:", err);
+                }
+            } finally {
+                if (browser) {
+                    await browser.close();
+                    console.log("浏览器已关闭。");
                 }
             }
         });
@@ -122,7 +129,7 @@ const execOnceLimit = 100;
     } finally {
         // 无论如何，确保浏览器被关闭
         if (browser) {
-            await browser.close();
+            //await browser.close();
             console.log("浏览器已关闭。");
         }
 
