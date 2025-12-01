@@ -27,8 +27,8 @@ async function action(page, item) {
     await humanType(page, textSelector, item.question_content);
     console.log(`questionText:${item.question_content}`)
 
-    // 再点击发送按钮
-    await page.evaluate(() => window.scrollBy(0, 400));
+    //点击发送按钮
+    await page.click('#flow-end-msg-send');
 
     // 此处等待3秒，为了等待ui响应.由于headless模式下不太稳定，改为等待更长时间
     //await waitSafe(3000);

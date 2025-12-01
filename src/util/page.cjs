@@ -39,7 +39,10 @@ async function realClick(page, selector) {
 
 async function humanType(page, textSelector, text) {
     await page.focus(textSelector);
+    await page.click(textSelector);
+
     await page.type(textSelector, text, {delay: 50}); // delay 毫秒，可设为 0
+
     await page.mouse.move(200, 300);
     await page.evaluate(() => window.scrollBy(0, 400));
 }
