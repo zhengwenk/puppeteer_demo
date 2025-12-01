@@ -1,7 +1,6 @@
-const {
-    waitForSelectorSafe, waitSafe, waitForClass,
-    realClick, humanType
-} = require("../util/wait.cjs");
+const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
+const {realClick, humanType, clickBlank} = require("../util/page.cjs");
+
 
 async function action(page, item) {
     // //获取新对话的按钮
@@ -82,12 +81,14 @@ async function action(page, item) {
         return parts.map(el => el.innerText.trim()).join("\n");
     });
 
-    if (answerText.length === 0) {
+    if (answerText.length === 0 || answerText === item.question_content) {
+        await clickBlank(page)
         await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}.png`});
         return {success: false, msg: "获取回答内容失败"}
     }
 
     console.log(answerText);
+
 
     //查找参考资料区域
     const searchSelector = 'div[data-testid="search-reference-ui"]';
