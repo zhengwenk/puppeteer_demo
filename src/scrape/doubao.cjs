@@ -87,7 +87,7 @@ async function action(page, item) {
         return parts.map(el => el.innerText.trim()).join("\n");
     });
 
-    if (answerText.length === 0 || answerText === item.question_content) {
+    if (answerText.length <= 10 || answerText === item.question_content) {
         await clickBlank(page)
         await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}.png`});
         return {success: false, msg: "获取回答内容失败"}

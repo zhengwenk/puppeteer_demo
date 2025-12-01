@@ -36,11 +36,30 @@ async function realClick(page, selector) {
 }
 
 async function humanType(page, selector, text) {
-    await page.focus(selector);
+    await page.waitForSelector(selector);
+    await page.click(selector);
+
+    await page.evaluate((selector) => {
+        const el = document.querySelector(selector);
+        el.value = "";
+    }, selector);
 
     for (const char of text) {
-        await page.keyboard.type(char, {delay: 30 + Math.random() * 80});
+        await page.evaluate((selector, char) => {
+            const el = document.querySelector(selector);
+            el.value += char;
+            el.dispatchEvent(new Event('input', {bubbles: true}));
+        }, selector, char);
+
+        // 随机延迟，模拟真人
+        await waitSafe(20 + Math.random() * 80);
     }
+
+    // FINAL：触发最终输入事件
+    await page.evaluate((selector) => {
+        const el = document.querySelector(selector);
+        el.dispatchEvent(new Event('change', {bubbles: true}));
+    }, selector);
 }
 
 module.exports = {
