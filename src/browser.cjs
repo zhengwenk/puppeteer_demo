@@ -16,27 +16,15 @@ const UAPool = [
 async function createBrowser(options = {}) {
     return await puppeteer.launch({
         headless: options.headless,
+        defaultViewport: {width: 1440, height: 900},
         args: [
-            '--no-sandbox', // 必须启用，否则在某些 Linux 环境下会启动失败
-            '--disable-setuid-sandbox', // 必须启用，否则在某些 Linux 环境下会启动失败
-
+            '--start-maximized',
+            '--no-sandbox',
+            '--disable-setuid-sandbox',
+            '--disable-dev-shm-usage',
             // 常用以减少 headless 标志的线索（并非万无一失）
-            '--disable-blink-features=AutomationControlled', //隐藏 navigator.webdriver === true
-            '--disable-infobars', //隐藏 API 抛出的错误堆栈敏感标识
-            '--disable-extensions-except=',
-            '--disable-dev-shm-usage',  //解决容器环境下 /dev/shm 太小导致页面崩溃的问题。
-            '--disable-webrtc', //禁用 WebRTC，防止 IP 泄漏
-
-            '--disable-background-timer-throttling', // 禁用内存策略检测
-            '--disable-backgrounding-occluded-windows', // 网站常用 JS 检查你的计时器节流 → 判断你是否后台运行
-
-            '--disable-web-security', //允许跨域（避免 iframe 的沙盒行为过于明显）
-            '--allow-running-insecure-content',
-
-            '--lang=zh-CN,zh', //设置语言
-            '--disable-features=IsolateOrigins,site-per-process', //隐藏 headless UA 特征（需要搭配自定义 UA）
-            '--no-first-run',
-            '--no-default-browser-check',
+            '--disable-blink-features=AutomationControlled',
+            '--enable-unsafe-swiftshader',
 
             ...(options.args || [])
         ],
@@ -49,10 +37,10 @@ async function createPage(browser) {
     const page = await browser.newPage();
 
     // 随机 UA
-    await page.setUserAgent(randomUA());
+    //await page.setUserAgent(randomUA());
 
     // 随机 Viewport
-    await page.setViewport(randomViewport());
+    //await page.setViewport(randomViewport());
 
     // Accept-Language
     await page.setExtraHTTPHeaders({

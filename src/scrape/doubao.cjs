@@ -27,12 +27,13 @@ async function action(page, item) {
     await humanType(page, textSelector, item.question_content);
     console.log(`questionText:${item.question_content}`)
 
+    await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_1.png`});
     //点击发送按钮
     await page.click('#flow-end-msg-send');
 
     // 此处等待3秒，为了等待ui响应.由于headless模式下不太稳定，改为等待更长时间
-    await waitSafe(3000);
-    await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_1.png`});
+    //await waitSafe(3000);
+    //
 
 
     // 等待时间可以根据实际情况调整，或者或许改成判断某个元素出现更好
@@ -63,7 +64,7 @@ async function action(page, item) {
     //查找参考资料区域
     const searchSelector = 'div[data-testid="search-reference-ui"]';
     const searchEl = await waitForSelectorSafe(
-        page, searchSelector, {visible: true, timeout: 60000}
+        page, searchSelector, {visible: true, timeout: 30000}
     );
 
     // 获取所有回答文本（最新那条）
