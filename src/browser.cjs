@@ -38,10 +38,10 @@ async function createPage(browser) {
     const page = await browser.newPage();
 
     // 随机 UA
-    await page.setUserAgent(randomUA());
+    //await page.setUserAgent(randomUA());
 
     // 随机 Viewport
-    await page.setViewport(randomViewport());
+    //await page.setViewport(randomViewport());
 
     // Accept-Language
     await page.setExtraHTTPHeaders({
@@ -58,10 +58,10 @@ async function createPage(browser) {
         });
     });
 
-    // await page.authenticate({
-    //     username: 't9cvmd',
-    //     password: 'rmbeu3jq'
-    // });
+    await page.authenticate({
+        username: 't9cvmd',
+        password: 'rmbeu3jq'
+    });
 
     return page;
 }
