@@ -100,7 +100,7 @@ const execOnceLimit = 100;
                 console.log(`任务成功, 等待下次任务......`);
 
                 // 增加请求的间隔
-                await new Promise(r => setTimeout(r, randomInt(10000, 30000)));
+                await new Promise(r => setTimeout(r, randomInt(30000, 60000)));
             } catch (err) {
                 console.error("\n--- 程序发生致命错误 ---");
                 console.error("错误详情:", err.message);
