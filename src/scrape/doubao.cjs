@@ -31,7 +31,9 @@ async function action(page, item) {
     await page.click('#flow-end-msg-send');
 
     // 此处等待3秒，为了等待ui响应.由于headless模式下不太稳定，改为等待更长时间
-    //await waitSafe(3000);
+    await waitSafe(3000);
+    await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_1.png`});
+
 
     // 等待时间可以根据实际情况调整，或者或许改成判断某个元素出现更好
     // 等待特定元素在headless模式下始终无法检测到变化，暂时还是固定等待60秒
@@ -83,7 +85,7 @@ async function action(page, item) {
 
     if (answerText.length <= 10 || answerText === item.question_content) {
         await clickBlank(page)
-        await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}.png`});
+        await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_2.png`});
         return {success: false, msg: "获取回答内容失败"}
     }
 

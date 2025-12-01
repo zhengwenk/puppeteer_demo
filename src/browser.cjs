@@ -73,10 +73,10 @@ async function createPage(browser) {
         });
     });
 
-    await page.authenticate({
-        username: 't9cvmd',
-        password: 'rmbeu3jq'
-    });
+    // await page.authenticate({
+    //     username: 't9cvmd',
+    //     password: 'rmbeu3jq'
+    // });
 
     return page;
 }
