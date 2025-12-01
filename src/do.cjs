@@ -36,19 +36,6 @@ const execOnceLimit = 100;
             return false;
         }
 
-        browser = await createBrowser({
-            headless: "new",
-            viewWidth: 1440,
-            viewHeight: 900,
-            userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${aiAccount.user_name}`,
-        });
-
-        const page = await browser.newPage();
-        // 监听 浏览器的console
-        //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
-
-        // 打开目标页面
-        console.log(aiAccount.url);
         await asyncForEach(list, async (item, index) => {
             // 开始任务
             console.log(`开始处理任务, 任务ID: ${item.id}`);
@@ -78,7 +65,23 @@ const execOnceLimit = 100;
                     return;
                 }
 
+                browser = await createBrowser({
+                    headless: "new",
+                    viewWidth: 1440,
+                    viewHeight: 900,
+                    userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${aiAccount.user_name}`,
+                });
+
+                const page = await browser.newPage();
+                // 监听 浏览器的console
+                //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+
+                // 打开目标页面
+                console.log(aiAccount.url);
+
                 await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
+
+
                 const {success, msg, result} = await handler.action(page, questionInfo);
 
                 console.log(success, msg, result);

@@ -1,18 +1,18 @@
 const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
 
 async function action(page, item) {
-    //获取新对话的按钮
-    const newChatSelector = 'div[data-testid="create_conversation_button"]';
-    const newChatEl = await waitForSelectorSafe(page, newChatSelector, {visible: true, timeout: 5000});
-
-    if (!newChatEl) {
-        return {success: false, msg: "获取新会话按钮失败"}
-    }
-
-    await Promise.all([
-        page.waitForNavigation({waitUntil: 'domcontentloaded'}),
-        page.click(newChatSelector)
-    ]);
+    // //获取新对话的按钮
+    // const newChatSelector = 'div[data-testid="create_conversation_button"]';
+    // const newChatEl = await waitForSelectorSafe(page, newChatSelector, {visible: true, timeout: 5000});
+    //
+    // if (!newChatEl) {
+    //     return {success: false, msg: "获取新会话按钮失败"}
+    // }
+    //
+    // await Promise.all([
+    //     page.waitForNavigation({waitUntil: 'domcontentloaded'}),
+    //     page.click(newChatSelector)
+    // ]);
 
     // 等待文本输入框元素出现（最多等 5 秒）
     const textSelector = 'textarea[data-testid="chat_input_input"]';
