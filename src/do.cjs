@@ -73,6 +73,9 @@ const execOnceLimit = 100;
                 browser = await createBrowser({
                     headless: "new",
                     userDataDir: userDataDir,
+                    args: [
+                        '--proxy-server=http://110.185.105.144:50004'
+                    ]
                 });
 
                 const page = await createPage(browser);
