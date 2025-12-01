@@ -1,6 +1,6 @@
 const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
 
-async function action(page, question) {
+async function action(page, item) {
     //获取新对话的按钮
     const newChatSelector = 'div[data-testid="create_conversation_button"]';
     const newChatEl = await waitForSelectorSafe(page, newChatSelector, {visible: true, timeout: 5000});
@@ -23,9 +23,9 @@ async function action(page, question) {
     }
 
     await page.focus(textSelector);
-    await page.type(textSelector, question, {delay: 50}); // delay 毫秒，可设为 0
+    await page.type(textSelector, item.question_content, {delay: 50}); // delay 毫秒，可设为 0
 
-    console.log(`questionText:${question}`);
+    console.log(`questionText:${question_content}`);
 
     // 鼠标移动模拟
     await page.mouse.move(200, 300);
@@ -41,7 +41,7 @@ async function action(page, question) {
 
     // 等待时间可以根据实际情况调整，或者或许改成判断某个元素出现更好
     // 等待特定元素在headless模式下始终无法检测到变化，暂时还是固定等待60秒
-    await waitSafe(page, 30000);
+    await waitSafe(page, 60000);
 
     // const sendBtnSelector = 'div[data-testid="chat_input_local_break_button"]';
     // const sendBtnEl = await waitForSelectorSafe(page, sendBtnSelector, {visible: true, timeout: 5000});
@@ -82,6 +82,7 @@ async function action(page, question) {
     });
 
     if (answerText.length === 0) {
+        await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}.png`});
         return {success: false, msg: "获取回答内容失败"}
     }
 
