@@ -19,6 +19,8 @@ const execOnceLimit = 100;
             return false;
         }
 
+        console.log(aiAccount);
+
         const handler = handlers[aiAccount.channel] || null;
 
         if (!handler) {
@@ -36,8 +38,8 @@ const execOnceLimit = 100;
 
         browser = await createBrowser({
             headless: "new",
-            viewWidth: 2560,
-            viewHeight: 1440,
+            viewWidth: 1440,
+            viewHeight: 900,
             userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${aiAccount.user_name}`,
         });
 

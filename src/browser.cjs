@@ -21,6 +21,7 @@ async function createBrowser(options = {}) {
             '--disable-dev-shm-usage',
             // 常用以减少 headless 标志的线索（并非万无一失）
             '--disable-blink-features=AutomationControlled',
+            '--disable-gpu',
             ...(options.args || [])
         ],
         executablePath: options.executablePath || executablePath(),
