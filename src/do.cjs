@@ -2,6 +2,7 @@ const handlers = require('./scrape/index.cjs');
 const {createBrowser, createPage} = require("./browser.cjs");
 const {asyncForEach} = require("./util/array.cjs");
 const {randomInt} = require("./util/math.cjs")
+const {removeDirSync} = require("./util/file.cjs");
 const ScrapeService = require("./service/ScrapeService.cjs");
 
 const execOnceLimit = 100;
@@ -65,9 +66,13 @@ const execOnceLimit = 100;
                     return;
                 }
 
+                const userDataDir = process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${aiAccount.user_name}`;
+
+                removeDirSync(userDataDir);
+
                 browser = await createBrowser({
                     headless: "new",
-                    userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${aiAccount.user_name}`,
+                    userDataDir: userDataDir,
                 });
 
                 const page = await createPage(browser);
