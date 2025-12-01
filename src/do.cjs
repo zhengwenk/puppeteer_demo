@@ -7,7 +7,6 @@ const ScrapeService = require("./service/ScrapeService.cjs");
 const execOnceLimit = 100;
 
 (async () => {
-    let browser;
     const scrapeService = new ScrapeService();
 
     try {
@@ -39,6 +38,7 @@ const execOnceLimit = 100;
         await asyncForEach(list, async (item, index) => {
             // 开始任务
             console.log(`开始处理任务, 任务ID: ${item.id}`);
+            let browser;
             try {
                 const resultId = await scrapeService.startTaskPlan(item)
 
@@ -77,9 +77,7 @@ const execOnceLimit = 100;
                 // 打开目标页面
                 console.log(aiAccount.url);
 
-                await page.goto(aiAccount.url, {waitUntil: 'networkidle0', timeout: 60 * 1000});
-
-
+                await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
                 const {success, msg, result} = await handler.action(page, questionInfo);
 
                 console.log(success, msg, result);
@@ -88,7 +86,7 @@ const execOnceLimit = 100;
                     await scrapeService.completeTaskPlan(item, resultId, msg, result);
                 }
 
-                await browser.close();
+                //await browser.close();
 
                 console.log(`任务成功, 等待下次任务......`);
 
@@ -125,12 +123,6 @@ const execOnceLimit = 100;
             console.error("完整错误对象:", error);
         }
     } finally {
-        // 无论如何，确保浏览器被关闭
-        if (browser) {
-            //await browser.close();
-            console.log("浏览器已关闭。");
-        }
-
         await scrapeService.destroyDB()
     }
 })();
