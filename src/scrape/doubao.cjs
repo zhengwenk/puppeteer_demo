@@ -1,7 +1,7 @@
 const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
 
 async function action(page, question) {
-    获取新对话的按钮
+    //获取新对话的按钮
     const newChatSelector = 'div[data-testid="create_conversation_button"]';
     const newChatEl = await waitForSelectorSafe(page, newChatSelector, {visible: true, timeout: 5000});
 
