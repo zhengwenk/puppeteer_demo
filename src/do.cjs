@@ -48,7 +48,11 @@ const execOnceLimit = 100;
 
         const page = await createPage(browser);
         // 监听 浏览器的console
-        page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+        //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+
+        await page.goto("chrome://version");
+        console.log(await page.content());
+        return
 
         await asyncForEach(list, async (item, index) => {
             // 开始任务
