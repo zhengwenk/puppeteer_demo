@@ -30,10 +30,6 @@ async function createBrowser(options = {}) {
             '--disable-background-timer-throttling', // 禁用内存策略检测
             '--disable-backgrounding-occluded-windows', // 网站常用 JS 检查你的计时器节流 → 判断你是否后台运行
 
-            '--enable-webgl', // 强制启用硬件加速
-            '--enable-accelerated-2d-canvas',
-            '--use-gl=desktop', // 如果你跑在 Linux 服务器，没图形环境会导致很多 Canvas/WebGL 指纹问题，被当成爬虫。
-
             '--disable-web-security', //允许跨域（避免 iframe 的沙盒行为过于明显）
             '--allow-running-insecure-content',
 

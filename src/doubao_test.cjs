@@ -40,7 +40,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
             //'--proxy-server=http://114.80.161.93:62000'
         ],
         executablePath: executablePath(), // 指向系统 Chrome（可替换为你的 Chrome 路径）
-        userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + "/abc",
+        userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + "/zhengwenkai",
     });
 
     // 打开新的页面
