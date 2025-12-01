@@ -1,5 +1,5 @@
 const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
-const {realClick, humanType, clickBlank} = require("../util/page.cjs");
+const {humanType, clickBlank} = require("../util/page.cjs");
 
 
 async function action(page, item) {
@@ -28,7 +28,7 @@ async function action(page, item) {
     console.log(`questionText:${item.question_content}`)
 
     // 再点击发送按钮
-    await realClick(page, '#flow-end-msg-send');
+    await page.evaluate(() => window.scrollBy(0, 400));
 
     // 此处等待3秒，为了等待ui响应.由于headless模式下不太稳定，改为等待更长时间
     //await waitSafe(3000);
