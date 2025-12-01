@@ -1,3 +1,5 @@
+const {waitSafe} = require("./wait.cjs");
+
 async function clickBlank(page) {
     const {width, height} = await page.evaluate(() => {
         return {

@@ -52,8 +52,6 @@ async function waitForClass(page, selector, className, options = {}) {
     }
 }
 
-
-
 module.exports = {
     waitSafe,
     waitForSelectorSafe,
