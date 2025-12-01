@@ -73,14 +73,14 @@ const execOnceLimit = 100;
                 browser = await createBrowser({
                     headless: "new",
                     userDataDir: userDataDir,
-                    args: [
-                        '--proxy-server=http://110.185.105.144:50004'
-                    ]
+                    // args: [
+                    //     '--proxy-server=http://110.185.105.144:50004'
+                    // ]
                 });
 
                 const page = await createPage(browser);
                 // 监听 浏览器的console
-                //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+                page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
                 // 打开目标页面
                 console.log(aiAccount.url);
