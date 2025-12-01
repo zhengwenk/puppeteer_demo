@@ -25,7 +25,7 @@ async function action(page, item) {
     await page.focus(textSelector);
     await page.type(textSelector, item.question_content, {delay: 50}); // delay 毫秒，可设为 0
 
-    console.log(`questionText:${question_content}`);
+    console.log(`questionText:${item.question_content}`);
 
     // 鼠标移动模拟
     await page.mouse.move(200, 300);
