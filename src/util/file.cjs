@@ -1,5 +1,5 @@
-import fs from 'fs';
-import fsp from 'fs/promises';
+const fs = require('fs');
+const fsp = require('fs/promises')
 
 async function removeDir(path) {
     if (!fs.existsSync(path)) {
