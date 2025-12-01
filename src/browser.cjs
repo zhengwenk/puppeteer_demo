@@ -16,7 +16,7 @@ const UAPool = [
 async function createBrowser(options = {}) {
     return await puppeteer.launch({
         headless: options.headless,
-        defaultViewport: {width: 1440, height: 900},
+        //defaultViewport: {width: 1440, height: 900},
         args: [
             '--start-maximized',
             '--no-sandbox',
@@ -37,10 +37,10 @@ async function createPage(browser) {
     const page = await browser.newPage();
 
     // 随机 UA
-    //await page.setUserAgent(randomUA());
+    await page.setUserAgent(randomUA());
 
     // 随机 Viewport
-    //await page.setViewport(randomViewport());
+    await page.setViewport(randomViewport());
 
     // Accept-Language
     await page.setExtraHTTPHeaders({
