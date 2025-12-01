@@ -25,13 +25,7 @@ async function action(page, item) {
     }
 
     await humanType(page, textSelector, item.question_content);
-    console.log(`questionText:${item.question_content}`);
-
-    // 鼠标移动模拟
-    await page.mouse.move(200, 300);
-
-    // 滚动页面
-    await page.evaluate(() => window.scrollBy(0, 400));
+    console.log(`questionText:${item.question_content}`)
 
     // 再点击发送按钮
     await realClick(page, '#flow-end-msg-send');

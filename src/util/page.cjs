@@ -19,9 +19,11 @@ async function clickBlank(page) {
 
 async function realClick(page, selector) {
     const el = await page.waitForSelector(selector, {visible: true});
-
     const box = await el.boundingBox();
-    if (!box) return;
+    if (!box) {
+        console.log(`元素不可见，无法点击: ${selector}`);
+        return;
+    }
 
     // 移到元素中间位置，模拟真实轨迹
     await page.mouse.move(
@@ -35,31 +37,11 @@ async function realClick(page, selector) {
     await page.mouse.up();
 }
 
-async function humanType(page, selector, text) {
-    await page.waitForSelector(selector);
-    await page.click(selector);
-
-    await page.evaluate((selector) => {
-        const el = document.querySelector(selector);
-        el.value = "";
-    }, selector);
-
-    for (const char of text) {
-        await page.evaluate((selector, char) => {
-            const el = document.querySelector(selector);
-            el.value += char;
-            el.dispatchEvent(new Event('input', {bubbles: true}));
-        }, selector, char);
-
-        // 随机延迟，模拟真人
-        await waitSafe(20 + Math.random() * 80);
-    }
-
-    // FINAL：触发最终输入事件
-    await page.evaluate((selector) => {
-        const el = document.querySelector(selector);
-        el.dispatchEvent(new Event('change', {bubbles: true}));
-    }, selector);
+async function humanType(page, textSelector, text) {
+    await page.focus(textSelector);
+    await page.type(textSelector, text, {delay: 50}); // delay 毫秒，可设为 0
+    await page.mouse.move(200, 300);
+    await page.evaluate(() => window.scrollBy(0, 400));
 }
 
 module.exports = {
