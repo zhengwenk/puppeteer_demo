@@ -4,6 +4,8 @@ const {
     TaskExpandQuestionModel,
 } = require('./models/index.cjs');
 
+const {fetchProxy} = require("./util/proxy.cjs");
+
 (async () => {
     try {
         // await TaskExecutePlanModel.transaction(async trx => {
@@ -37,18 +39,19 @@ const {
         // })
         // console.log(list);
 
-        const list = await TaskExecutePlanModel.find(
-            {ai_bot_id: 1},
-            ['*'],
-            {
-                limit: 10
-            }
-        );
-
-        const question = await TaskExpandQuestionModel.findById(1)
-
-        console.log(list, question);
-
+        // const list = await TaskExecutePlanModel.find(
+        //     {ai_bot_id: 1},
+        //     ['*'],
+        //     {
+        //         limit: 10
+        //     }
+        // );
+        //
+        // const question = await TaskExpandQuestionModel.findById(1)
+        //
+        // console.log(list, question);
+        const res = await fetchProxy()
+        console.log(res);
 
     } catch (err) {
         console.log(err);
