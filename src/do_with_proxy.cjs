@@ -37,8 +37,6 @@ const execOnceLimit = 100;
             return false;
         }
 
-
-        const page = await createPage(browser);
         // 监听 浏览器的console
         //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
