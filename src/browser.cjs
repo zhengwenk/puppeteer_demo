@@ -16,7 +16,7 @@ const UAPool = [
 async function createBrowser(options = {}) {
     return await puppeteer.launch({
         headless: options.headless,
-        defaultViewport: {width: options.viewport.w, height: options.viewport.h},
+        defaultViewport: {width: 1440, height: 900},
         args: [
             '--start-maximized',
             '--no-sandbox',
