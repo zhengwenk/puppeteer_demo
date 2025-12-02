@@ -67,11 +67,10 @@ async function createPage(browser) {
 
 function randomViewport() {
     const devices = [
-        {w: 1920, h: 1080},
         {w: 1680, h: 1050},
         {w: 1536, h: 864},
         {w: 1366, h: 768},
-        {w: 2560, h: 1440},
+        {w: 1440, h: 900},
     ];
 
     return devices[Math.floor(Math.random() * devices.length)]

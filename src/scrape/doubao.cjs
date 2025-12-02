@@ -28,6 +28,7 @@ async function action(page, item) {
     console.log(`questionText:${item.question_content}`)
 
     await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_1.png`});
+
     //点击发送按钮
     await page.click('#flow-end-msg-send');
 
