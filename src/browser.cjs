@@ -16,7 +16,7 @@ const UAPool = [
 async function createBrowser(options = {}) {
     return await puppeteer.launch({
         headless: options.headless,
-        defaultViewport: {width: 1440, height: 900},
+        defaultViewport: {width: options.viewport.w, height: options.viewport.h},
         args: [
             '--start-maximized',
             '--no-sandbox',
@@ -25,7 +25,6 @@ async function createBrowser(options = {}) {
             // 常用以减少 headless 标志的线索（并非万无一失）
             '--disable-blink-features=AutomationControlled',
             '--enable-unsafe-swiftshader',
-            '--user-agent="Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/126.0.0.0 Safari/537.36"',
 
             ...(options.args || [])
         ],
@@ -58,10 +57,10 @@ async function createPage(browser) {
         });
     });
 
-    await page.authenticate({
-        username: 't9cvmd',
-        password: 'rmbeu3jq'
-    });
+    // await page.authenticate({
+    //     username: 't9cvmd',
+    //     password: 'rmbeu3jq'
+    // });
 
     return page;
 }
@@ -75,13 +74,7 @@ function randomViewport() {
         {w: 2560, h: 1440},
     ];
 
-    const d = devices[Math.floor(Math.random() * devices.length)];
-
-    return {
-        width: d.w + Math.floor(Math.random() * 40 - 20),
-        height: d.h + Math.floor(Math.random() * 40 - 20),
-        deviceScaleFactor: 1
-    };
+    return devices[Math.floor(Math.random() * devices.length)]
 }
 
 function randomUA() {
@@ -111,5 +104,7 @@ async function humanMouseMove(page, selector = null) {
 module.exports = {
     createBrowser,
     createPage,
+    randomViewport,
+    randomUA,
     humanMouseMove
 };

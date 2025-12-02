@@ -1,10 +1,11 @@
 const handlers = require('./scrape/index.cjs');
-const {createBrowser, createPage} = require("./browser.cjs");
+const {createBrowser, createPage, randomUA, randomViewport} = require("./browser.cjs");
 const {asyncForEach} = require("./util/array.cjs");
 const {randomInt} = require("./util/math.cjs")
 const {removeDirSync} = require("./util/file.cjs");
 const ScrapeService = require("./service/ScrapeService.cjs");
 const {fetchProxy} = require("./util/proxy.cjs");
+
 
 const execOnceLimit = 100;
 
@@ -82,13 +83,26 @@ const execOnceLimit = 100;
 
                 console.log(`使用代理: ${proxyUrl}`);
 
+                const ua = randomUA()
+
+                console.log(`使用UA: ${ua}`);
+
+                const viewPort = randomViewport();
+
+                console.log(`使用视窗: ${JSON.stringify(viewPort)}`);
+
+
                 browser = await createBrowser({
                     headless: "new",
                     userDataDir: userDataDir,
+                    viewport: viewPort,
                     args: [
                         `--proxy-server=${proxyUrl}`
+                            `--user-agent="${ua}"`
                     ]
                 });
+
+                const page = await createPage(browser);
 
                 // 打开目标页面
                 console.log(aiAccount.url);
