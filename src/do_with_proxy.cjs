@@ -97,8 +97,8 @@ const execOnceLimit = 100;
                     userDataDir: userDataDir,
                     viewport: viewPort,
                     args: [
-                        `--proxy-server=${proxyUrl}`
-                            `--user-agent="${ua}"`
+                        `--proxy-server=${proxyUrl}`,
+                        `--user-agent="${ua}"`
                     ]
                 });
 
