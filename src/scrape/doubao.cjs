@@ -26,6 +26,7 @@ async function action(page, item) {
 
     await humanType(page, textSelector, item.question_content);
     console.log(`questionText:${item.question_content}`)
+    await waitSafe(2000);
 
     await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_1.png`});
 
