@@ -79,9 +79,8 @@ const execOnceLimit = 100;
 
                 removeDirSync(userDataDir);
 
-                //const proxyUrl = await fetchProxy();
-
-                //console.log(`使用代理: ${proxyUrl}`);
+                const proxyUrl = await fetchProxy();
+                console.log(`使用代理: ${proxyUrl}`);
 
                 const ua = randomUA()
 
@@ -97,7 +96,7 @@ const execOnceLimit = 100;
                     userDataDir: userDataDir,
                     viewport: viewPort,
                     args: [
-                        //`--proxy-server=${proxyUrl}`,
+                        `--proxy-server=${proxyUrl}`,
                         `--user-agent="${ua}"`
                     ]
                 });
