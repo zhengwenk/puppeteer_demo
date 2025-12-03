@@ -45,6 +45,8 @@ const execOnceLimit = 100;
             // args: [
             //     '--proxy-server=http://110.185.105.144:50004'
             // ]
+            // @todo
+            executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         });
 
         const page = await createPage(browser);
