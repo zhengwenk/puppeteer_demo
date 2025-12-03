@@ -1,11 +1,12 @@
 const handlers = require('./scrape/index.cjs');
-const {createBrowser, createPage} = require("./browser.cjs");
+const {createBrowser, createPage, headlessStatus} = require("./browser.cjs");
 const {asyncForEach} = require("./util/array.cjs");
 const {randomInt} = require("./util/math.cjs")
 const {removeDirSync} = require("./util/file.cjs");
 const ScrapeService = require("./service/ScrapeService.cjs");
 
 const execOnceLimit = 100;
+
 
 (async () => {
     const scrapeService = new ScrapeService();
@@ -40,7 +41,7 @@ const execOnceLimit = 100;
 
         browser = await createBrowser({
             //headless: "new",
-            headless: false,
+            headless: headlessStatus(),
             userDataDir: userDataDir,
             // args: [
             //     '--proxy-server=http://110.185.105.144:50004'

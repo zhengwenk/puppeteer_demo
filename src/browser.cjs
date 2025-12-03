@@ -16,6 +16,7 @@ const UAPool = [
 
 const executablePaths = {
     win: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+    macOS: "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
 }
 
 async function createBrowser(options = {}) {
@@ -94,6 +95,17 @@ function randomUA() {
     return UAPool[Math.floor(Math.random() * UAPool.length)];
 }
 
+function headlessStatus() {
+    const args = process.argv.slice(2);
+    if (args.length > 0) {
+        if (args[0] === 'show') {
+            return false;
+        }
+    }
+
+    return "new"
+}
+
 async function humanMouseMove(page, selector = null) {
     let target;
 
@@ -119,5 +131,6 @@ module.exports = {
     createPage,
     randomViewport,
     randomUA,
-    humanMouseMove
+    //humanMouseMove,
+    headlessStatus
 };
