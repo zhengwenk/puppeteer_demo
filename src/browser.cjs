@@ -30,6 +30,9 @@ async function createBrowser(options = {}) {
             // 常用以减少 headless 标志的线索（并非万无一失）
             '--disable-blink-features=AutomationControlled',
             '--enable-unsafe-swiftshader',
+            '--disable-infobars',
+            '--disable-web-security',
+            '--allow-running-insecure-content',
 
             ...(options.args || [])
         ],
@@ -56,58 +59,6 @@ async function createPage(browser) {
     await page.evaluateOnNewDocument(() => {
         Object.defineProperty(navigator, 'languages', {
             get: () => ['zh-CN', 'zh'],
-        });
-    });
-
-    await page.evaluateOnNewDocument(() => {
-        const pluginData = [
-            {
-                name: "Chrome PDF Plugin",
-                description: "Portable Document Format",
-                filename: "internal-pdf-viewer",
-            },
-            {
-                name: "Chrome PDF Viewer",
-                description: "",
-                filename: "mhjfbmdgcfjbbpaeojofohoefgiehjai",
-            },
-            {
-                name: "Native Client",
-                description: "",
-                filename: "internal-nacl-plugin",
-            },
-        ];
-
-        Object.defineProperty(navigator, "plugins", {
-            get: () => {
-                const arr = pluginData.map(p => Object.freeze({...p}));
-
-                // 创建类数组对象，不使用 PluginArray
-                arr.item = (i) => arr[i];
-                arr.namedItem = (name) => arr.find(p => p.name === name);
-                //arr.length = arr.length;
-
-                return Object.freeze(arr);
-            },
-            configurable: true,
-        });
-
-        Object.defineProperty(navigator, "mimeTypes", {
-            get: () => {
-                const mimes = pluginData.map(p => ({
-                    type: "application/pdf",
-                    suffixes: "pdf",
-                    description: p.description
-                }));
-                const arr = mimes.map(m => Object.freeze({...m}));
-
-                arr.item = (i) => arr[i];
-                arr.namedItem = (name) => arr.find(m => m.description === name);
-                //arr.length = arr.length;
-
-                return Object.freeze(arr);
-            },
-            configurable: true,
         });
     });
 
