@@ -1,4 +1,4 @@
-FROM ghcr.io/puppeteer/puppeteer:24.2.1
+FROM ghcr.io/puppeteer/puppeteer:24.30.0
 ENV DBUS_SESSION_BUS_ADDRESS=autolaunch:
 
 USER root

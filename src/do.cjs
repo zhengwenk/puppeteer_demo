@@ -39,11 +39,12 @@ const execOnceLimit = 100;
         const userDataDir = process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${aiAccount.user_name}`;
 
         browser = await createBrowser({
-            headless: "new",
+            //headless: "new",
+            headless: false,
             userDataDir: userDataDir,
-            args: [
-                '--proxy-server=http://110.185.105.144:50004'
-            ]
+            // args: [
+            //     '--proxy-server=http://110.185.105.144:50004'
+            // ]
         });
 
         const page = await createPage(browser);
