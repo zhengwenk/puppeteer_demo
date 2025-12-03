@@ -14,3 +14,7 @@ function detectOS() {
 
     return osStr
 }
+
+module.exports = {
+    detectOS,
+};
