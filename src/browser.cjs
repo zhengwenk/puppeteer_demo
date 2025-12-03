@@ -2,6 +2,7 @@
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const { executablePath } = require('puppeteer');
+const {detectOS} = require('./util/env.cjs');
 
 puppeteer.use(StealthPlugin());
 
@@ -12,6 +13,10 @@ const UAPool = [
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64; rv:122.0) Gecko/20100101 Firefox/122.0",
     "Mozilla/5.0 (Macintosh; Intel Mac OS X 12.6) AppleWebKit/605.1.15 (KHTML, like Gecko) Version/17.0 Safari/605.1.15",
 ];
+
+const executablePaths = {
+    win: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+}
 
 async function createBrowser(options = {}) {
     return await puppeteer.launch({
@@ -28,7 +33,7 @@ async function createBrowser(options = {}) {
 
             ...(options.args || [])
         ],
-        executablePath: options.executablePath || executablePath(),
+        executablePath: getExecutablePath(options.executablePath),
         userDataDir: options.userDataDir || undefined,
     });
 }
@@ -112,6 +117,15 @@ async function createPage(browser) {
     // });
 
     return page;
+}
+
+function getExecutablePath(path) {
+    if (path && path.length > 0) {
+        return path;
+    }
+
+    const os = detectOS();
+    return executablePaths[os] || executablePath();
 }
 
 function randomViewport() {

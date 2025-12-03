@@ -39,19 +39,32 @@ const {fetchProxy} = require("./util/proxy.cjs");
         // })
         // console.log(list);
 
-        // const list = await TaskExecutePlanModel.find(
-        //     {ai_bot_id: 1},
-        //     ['*'],
-        //     {
-        //         limit: 10
-        //     }
-        // );
-        //
-        // const question = await TaskExpandQuestionModel.findById(1)
-        //
-        // console.log(list, question);
-        const res = await fetchProxy()
-        console.log(res);
+        // // const list = await TaskExecutePlanModel.find(
+        // //     {ai_bot_id: 1},
+        // //     ['*'],
+        // //     {
+        // //         limit: 10
+        // //     }
+        // // );
+        // //
+        // // const question = await TaskExpandQuestionModel.findById(1)
+        // //
+        // // console.log(list, question);
+        // const res = await fetchProxy()
+        // console.log(res);
+
+        const os = require('os');
+
+        const platform = os.platform();
+        console.log(platform); // 可能输出 'win32', 'darwin', 'linux', 'aix', 'freebsd', 'sunos'
+
+        if (platform === 'win32') {
+            console.log('当前是 Windows 系统');
+        } else if (platform === 'darwin') {
+            console.log('当前是 macOS 系统');
+        } else if (platform === 'linux') {
+            console.log('当前是 Linux 系统');
+        }
 
     } catch (err) {
         console.log(err);
