@@ -29,7 +29,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
         headless: false,
         devtools: false,
         //defaultViewport: null,
-        defaultViewport: {width: 1440, height: 900},
+        //defaultViewport: {width: 1440, height: 900},
         args: [
             '--start-maximized',
             '--no-sandbox',
