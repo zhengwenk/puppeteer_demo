@@ -63,6 +63,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     const targetUrl = "https://chat.deepseek.com";
     await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
 
+    return;
     // 等待文本输入框元素出现（最多等 5 秒）
     const textSelector = 'textarea';
     const textEl = await waitForSelectorSafe(page, textSelector, {visible: true, timeout: 5000});
