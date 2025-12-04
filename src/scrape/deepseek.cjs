@@ -1,7 +1,12 @@
 const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
 const {humanType, clickBlank} = require("../util/page.cjs");
 
-
+/**
+ *
+ * @param page
+ * @param item {{question_content: string, id: number}}
+ * @returns {Promise<{success: boolean, msg: string}|{success: boolean, msg: string, result: {answer: *, search: string}}>}
+ */
 async function action(page, item) {
     // //获取新对话的按钮
     // const newChatSelector = 'div[data-testid="create_conversation_button"]';
@@ -54,18 +59,9 @@ async function action(page, item) {
     console.log('第二个 button 是否选中：', isSelected);
     await waitSafe(1000);
 
-
     //点击发送按钮
-    // 再点击发送按钮
     await page.click('div.ds-icon-button._7436101');
-
-    //await waitSafe(30000);
-
-    // 用等待 加载搜索结果的方式，替代固定等待时间
-    // 因为搜索结果出来证明已经回答完了。如果没有搜索结果,则有可能会等待比较长时间。
-    const searchEl = await waitForSelectorSafe(page,
-        'div.dc433409 a._24fe229', {visible: true, timeout: 60000}
-    );
+    await waitSafe(30000);
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
@@ -85,15 +81,24 @@ async function action(page, item) {
         const answer = parts.map(el => el.innerText.trim()).join("\n");
 
         const searchResultBtn = document.getElementsByClassName('f93f59e4')[0];
-        searchResultBtn.click();
+
+        if (searchResultBtn) {
+            searchResultBtn.click();
+        }
         return answer
     });
+
+    console.log("ai:" + answerText);
 
     if (answerText.length <= 10 || answerText === item.question_content) {
         await clickBlank(page)
         await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_2.png`});
         return {success: false, msg: "获取回答内容失败"}
     }
+
+    const searchEl = await waitForSelectorSafe(page,
+        'div.dc433409 a._24fe229', {visible: true, timeout: 5000}
+    );
 
     if (!searchEl) {
         // 如果没获取到参考资料区域，也更算是成功。
