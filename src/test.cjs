@@ -11,7 +11,7 @@ if (aiAccountId <= 0) {
 
 // 目录不存在
 if (!fs.existsSync(lockFileDir)) {
-    console.error(`PUPPETEER_LOCK_FILE_DIR`);
+    console.error(`PUPPETEER_LOCK_FILE_DIR 目录不存在`);
     process.exit(1);
 }
 const lockFile = `${lockFileDir}/do_${aiAccountId}.lock`;
