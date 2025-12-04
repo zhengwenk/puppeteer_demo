@@ -24,3 +24,7 @@ function lockProcess(lockFilePath, processId) {
         return false; // 已有进程持有锁
     }
 }
+
+module.exports = {
+    lockProcess,
+}
