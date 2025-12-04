@@ -10,11 +10,11 @@ const loginStatusNotLogined = 0;
     let browser;
     try {
         // 获取环境变量确定是那个账号id
-        const inputId = Number(process.env.Ai_ACCOUNT_ID);
+        const inputId = Number(process.env.AI_ACCOUNT_ID);
         const aiAccount = await AiAccountModel.findById(inputId);
 
         if (!aiAccount || aiAccount.id !== inputId) {
-            console.error(`未找到对应的AI账号，ID: ${process.env.Ai_ACCOUNT_ID}`);
+            console.error(`未找到对应的AI账号，ID: ${process.env.AI_ACCOUNT_ID}`);
             return
         }
 
@@ -41,7 +41,7 @@ const loginStatusNotLogined = 0;
         const logined = await loginHandler.checkLogin(page, aiAccount.nickname);
 
         if (!logined) {
-            console.log(`未登录，id:${process.env.Ai_ACCOUNT_ID}`);
+            console.log(`未登录，id:${process.env.AI_ACCOUNT_ID}`);
 
             if (aiAccount.login_status !== loginStatusNotLogined) {
                 await AiAccountModel.updateById(aiAccount.id, {login_status: loginStatusLogined})

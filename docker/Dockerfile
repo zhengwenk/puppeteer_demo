@@ -11,12 +11,14 @@ WORKDIR /home/pptruser
 
 ENV PUPPETEER_CHROME_USER_DATA_DIR=/home/pptruser/chrome_data
 ENV PUPPETEER_USER_QRCODE_IMG_DIR=/home/pptruser/qrcode_img
+ENV PUPPETEER_LOCK_FILE_DIR=/home/pptruser/lock_files
 ENV PUPPETEER_SKIP_DOWNLOAD=true
 
-RUN mkdir -p $PUPPETEER_CHROME_USER_DATA_DIR $PUPPETEER_USER_QRCODE_IMG_DIR
+RUN mkdir -p $PUPPETEER_CHROME_USER_DATA_DIR $PUPPETEER_USER_QRCODE_IMG_DIR $PUPPETEER_LOCK_FILE_DIR
 
 VOLUME ["/home/pptruser/chrome_data"]
 VOLUME ["/home/pptruser/qrcode_img"]
+VOLUME ["/home/pptruser/lock_files"]
 
 COPY package.json ./
 

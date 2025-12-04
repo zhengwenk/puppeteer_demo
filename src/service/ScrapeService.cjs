@@ -99,6 +99,11 @@ class ScrapeService extends BaseService {
         return TaskExpandQuestionModel.findById(questionId)
     }
 
+    /**
+     *
+     * @param aiBotId
+     * @returns {Promise<{id: number, channel: string, nickname: string, user_name: string, url:string}|null>}
+     */
     async getAiBotById(aiBotId) {
         return AiAccountModel.findById(aiBotId)
     }

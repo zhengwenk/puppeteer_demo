@@ -2,21 +2,43 @@ const handlers = require('./scrape/index.cjs');
 const {createBrowser, createPage, headlessStatus} = require("./browser.cjs");
 const {asyncForEach} = require("./util/array.cjs");
 const {randomInt} = require("./util/math.cjs")
-const {removeDirSync} = require("./util/file.cjs");
+//const {removeDirSync} = require("./util/file.cjs");
 const ScrapeService = require("./service/ScrapeService.cjs");
+const {lockProcess} = require("./util/lock.cjs");
+const fs = require('fs');
 
 const execOnceLimit = 100;
+const aiAccountId = Number(process.env.AI_ACCOUNT_ID) || 0;
+const lockFileDir = process.env.PUPPETEER_LOCK_FILE_DIR || '';
 
+if (aiAccountId <= 0) {
+    console.error(`请设置正确的AI_ACCOUNT_ID环境变量`);
+    process.exit(1);
+}
+
+// 目录不存在
+if (!fs.existsSync(lockFileDir)) {
+    console.error(`PUPPETEER_LOCK_FILE_DIR`);
+    process.exit(1);
+}
+
+// 检查进程是否已经在运行
+const lockFilePath = `${lockFileDir}/do_${aiAccountId}.lock`;
+const isLocked = lockProcess(lockFilePath, process.pid);
+if (!isLocked) {
+    console.log(`该任务已有一个实例在运行，退出当前进程。`);
+    process.exit(1);
+}
 
 (async () => {
     const scrapeService = new ScrapeService();
     let browser;
     try {
         // 获取环境变量确定是那个账号id
-        const inputAccountId = Number(process.env.Ai_ACCOUNT_ID);
-        const aiAccount = await scrapeService.getAiBotById(inputAccountId);
+
+        const aiAccount = await scrapeService.getAiBotById(aiAccountId);
         if (!aiAccount) {
-            console.error(`未找到对应的AI账号，ID: ${process.env.Ai_ACCOUNT_ID}`);
+            console.error(`未找到对应的AI账号，ID: ${aiAccountId}`);
             return false;
         }
 
@@ -139,5 +161,7 @@ const execOnceLimit = 100;
             await browser.close();
             console.log("浏览器已关闭。");
         }
+
+        process.exit(0);
     }
 })();

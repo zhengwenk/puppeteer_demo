@@ -12,10 +12,10 @@ const execOnceLimit = 100;
     let browser;
     try {
         // 获取环境变量确定是那个账号id
-        const inputAccountId = Number(process.env.Ai_ACCOUNT_ID);
+        const inputAccountId = Number(process.env.AI_ACCOUNT_ID);
         const aiAccount = await scrapeService.getAiBotById(inputAccountId);
         if (!aiAccount) {
-            console.error(`未找到对应的AI账号，ID: ${process.env.Ai_ACCOUNT_ID}`);
+            console.error(`未找到对应的AI账号，ID: ${process.env.AI_ACCOUNT_ID}`);
             return false;
         }
 
