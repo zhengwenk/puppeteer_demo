@@ -57,11 +57,11 @@ async function action(page, item) {
     });
 
     console.log('第二个 button 是否选中：', isSelected);
-    await waitSafe(1000);
+    await waitSafe(page, 1000);
 
     //点击发送按钮
     await page.click('div.ds-icon-button._7436101');
-    await waitSafe(30000);
+    await waitSafe(page, 30000);
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {

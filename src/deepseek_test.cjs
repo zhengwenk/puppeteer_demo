@@ -152,23 +152,24 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     if (!searchEl) {
         // 如果没获取到参考资料区域，也更算是成功。
         console.log("获取搜索内容失败");
-    }
 
-    // 抓取数据
-    const results = await page.evaluate(() => {
-        const list = document.querySelectorAll('div.dc433409 a._24fe229');
-        return Array.from(list).map(a => {
-            const title = a.querySelector('div.search-view-card__title')?.innerText.trim() || '';
-            const snippet = a.querySelector('div.search-view-card__snippet')?.innerText.trim() || '';
-            const source = a.querySelector('span.d2eca804')?.innerText.trim() || '';
-            const date = a.querySelector('span.caa1ee14')?.innerText.trim() || '';
-            const link = a.href;
+    } else {
+        // 抓取数据
+        const results = await page.evaluate(() => {
+            const list = document.querySelectorAll('div.dc433409 a._24fe229');
+            return Array.from(list).map(a => {
+                const title = a.querySelector('div.search-view-card__title')?.innerText.trim() || '';
+                const snippet = a.querySelector('div.search-view-card__snippet')?.innerText.trim() || '';
+                const source = a.querySelector('span.d2eca804')?.innerText.trim() || '';
+                const date = a.querySelector('span.caa1ee14')?.innerText.trim() || '';
+                const link = a.href;
 
-            return {title, snippet, source, date, link};
+                return {title, snippet, source, date, link};
+            });
         });
-    });
 
-    console.log(results);
+        console.log(results);
+    }
 
     await browser.close();
 
