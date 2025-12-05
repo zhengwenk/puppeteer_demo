@@ -61,7 +61,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
 
     page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
-    const targetUrl = "https://chat.deepseek.com";
+    const targetUrl = "https://www.kimi.com";
     await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
 
     const textSelector = 'div.chat-input-editor';
