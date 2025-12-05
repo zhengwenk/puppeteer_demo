@@ -41,7 +41,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
             //'--proxy-server=http://114.80.161.93:62000'
         ],
         executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
-        userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + "/honghong",
+        userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + "/user_3764",
     });
 
     // 打开新的页面
