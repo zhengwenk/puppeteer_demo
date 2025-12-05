@@ -71,7 +71,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
         return {success: false, msg: "获取文本框失败"}
     }
 
-    const text = '帮我写一首关于春天的诗歌，要求押韵，四句，每句七个字。';
+    const text = '帮我写一篇去韩国旅游的详细攻略，包含景点、美食、住宿和交通，一家四口出行。';
     await page.focus(textSelector);
     //await page.click(textSelector);
     await page.type(textSelector, text, {delay: 50}); // delay 毫秒，可设为 0
