@@ -22,6 +22,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     }
 }
 
+
 (async function () {
     // 启动一个浏览器
     const browser = await puppeteer.launch({
@@ -63,13 +64,13 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     const targetUrl = "https://chat.deepseek.com";
     await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
 
-    // 等待文本输入框元素出现（最多等 5 秒）
-    const textSelector = 'textarea';
-    const textEl = await waitForSelectorSafe(page, textSelector, {visible: true, timeout: 5000});
+    const textSelector = 'div.chat-input-editor';
+    const textEl = await page.waitForSelector(textSelector, {visible: true, timeout: 5000});
 
     if (!textEl) {
         return {success: false, msg: "获取文本框失败"}
     }
+
     const text = '帮我写一首关于春天的诗歌，要求押韵，四句，每句七个字。';
     await page.focus(textSelector);
     //await page.click(textSelector);
@@ -78,99 +79,72 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     await page.evaluate(() => window.scrollBy(0, 400));
     await waitSafe(2000);
 
-    // 判断联网搜索的开关是否开启
-    // 等待联网搜索开关的父元素元素加载
-    await waitForSelectorSafe(page, 'div.ec4f5d61', {visible: true, timeout: 5000});
-
-    // 获取父元素下的第二个 button
-    const isSelected = await page.evaluate(() => {
-        const parent = document.querySelector('div.ec4f5d61');
-        if (!parent) return 0;
-
-        const buttons = parent.querySelectorAll('button');
-        if (buttons.length < 2) return 0;
-
-        const secondBtn = buttons[1]; // 第二个 button，索引从 0 开始
-        if (secondBtn.classList.contains('ds-toggle-button--selected')) {
-            return 2;
-        } else {
-            secondBtn.click();
-            return 1;
-        }
-    });
-
-    console.log('第二个 button 是否选中：', isSelected);
-    await waitSafe(1000);
-
     //点击发送按钮
-    await page.click('div.ds-icon-button._7436101');
+    await page.keyboard.press('Enter');
 
-    // 等待30s
+    // 等待回答
     await waitSafe(page, 30000);
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
         console.log("start.....");
-        const containers = [...document.querySelectorAll('.dad65929 .ds-message')];
+        const containers = [...document.querySelectorAll('.markdown-container')];
         if (!containers.length) return '';
         console.log(containers);
         const last = containers[containers.length - 1];
         if (!last) return '';
         console.log(last);
 
-        const parts = [...last.querySelectorAll('.ds-markdown-paragraph')];
+        const parts = [...last.querySelectorAll('div.paragraph')];
         if (!parts.length) return '';
 
         console.log(parts);
 
-        const answer = parts.map(el => el.innerText.trim()).join("\n");
-
-        const searchResultBtn = document.getElementsByClassName('f93f59e4')[0];
-
-        if (searchResultBtn) {
-            searchResultBtn.click();
-        }
-
-        return answer
+        return parts.map(el => el.innerText.trim()).join("\n");
     });
 
-    console.log("AI 回复：", answerText);
+    console.log("ai:" + answerText);
 
-    if (answerText.length <= 10 || answerText === text) {
-        //await clickBlank(page)
-        await page.screenshot({
-            path: `${process.env.PUPPETEER_USER_QRCODE_IMG_DIR}/screenshot_test_2.png`
-        });
-
-        console.log("获取内容失败");
-    }
-
+    // kimi的搜索区域是自动展开的，不需要点击
     const searchEl = await waitForSelectorSafe(page,
-        'div.dc433409 a._24fe229', {visible: true, timeout: 5000}
+        'div.sites', {visible: true, timeout: 5000}
     );
 
     if (!searchEl) {
-        // 如果没获取到参考资料区域，也更算是成功。
-        console.log("获取搜索内容失败");
-
-    } else {
-        // 抓取数据
-        const results = await page.evaluate(() => {
-            const list = document.querySelectorAll('div.dc433409 a._24fe229');
-            return Array.from(list).map(a => {
-                const title = a.querySelector('div.search-view-card__title')?.innerText.trim() || '';
-                const snippet = a.querySelector('div.search-view-card__snippet')?.innerText.trim() || '';
-                const source = a.querySelector('span.d2eca804')?.innerText.trim() || '';
-                const date = a.querySelector('span.caa1ee14')?.innerText.trim() || '';
-                const link = a.href;
-
-                return {title, snippet, source, date, link};
-            });
-        });
-
-        console.log(results);
+        console.log("获取参考数据区域失败");
+        return false;
     }
 
-    await browser.close();
+    const searchResults = await page.evaluate(() => {
+        const sites = document.querySelectorAll("div.sites > a.site");
+        const data = [];
+        if (sites.length === 0) {
+            return data;
+        }
+        sites.forEach(site => {
+            const url = site.getAttribute('href');
+            // 提取网站名称（可能需要处理 <svg> 旁边的文本）
+            const nameElement = site.querySelector('div.header span.name');
+            const name = nameElement ? nameElement.textContent.trim() : 'N/A';
 
-})();
+            // 提取标题
+            const titleElement = site.querySelector('p.title');
+            const title = titleElement ? titleElement.textContent.trim() : 'N/A';
+
+            // 提取摘要/片段 (snippet)
+            const snippetElement = site.querySelector('p.snippet');
+            const snippet = snippetElement ? snippetElement.textContent.trim() : 'N/A';
+
+            data.push({url, name, title, snippet});
+        });
+
+        return data;
+    });
+
+    if (searchResults.length === 0) {
+        console.log("获取参考数据失败");
+    }
+
+    console.log(searchResults);
+    return true;
+}());
