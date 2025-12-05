@@ -83,7 +83,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     await page.keyboard.press('Enter');
 
     // 等待回答
-    await waitSafe(page, 30000);
+    await waitSafe(page, 60000);
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
