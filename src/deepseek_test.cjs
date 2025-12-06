@@ -139,7 +139,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     if (answerText.length <= 10 || answerText === text) {
         //await clickBlank(page)
         await page.screenshot({
-            path: `${process.env.PUPPETEER_USER_QRCODE_IMG_DIR}/screenshot_test_2.png`
+            path: `${process.env.PUPPETEER_USER_QRCODE_IMG_DIR}/screenshot_test_2.png`,
         });
 
         console.log("获取内容失败");
@@ -171,6 +171,6 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
         console.log(results);
     }
 
-    await browser.close();
+    //await browser.close();
 
 })();

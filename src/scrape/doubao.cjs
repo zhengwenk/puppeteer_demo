@@ -66,7 +66,7 @@ async function action(page, item) {
     //查找参考资料区域
     const searchSelector = 'div[data-testid="search-reference-ui"]';
     const searchEl = await waitForSelectorSafe(
-        page, searchSelector, {visible: true, timeout: 30000}
+        page, searchSelector, {visible: true, timeout: 60000}
     );
 
     // 获取所有回答文本（最新那条）
