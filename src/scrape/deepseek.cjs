@@ -4,7 +4,7 @@ const {humanType, clickBlank} = require("../util/page.cjs");
 /**
  *
  * @param page
- * @param item {{question_content: string, id: number}}
+ * @param item {{question_content: string, id: number, ai_bot_id: number}}
  * @returns {Promise<{success: boolean, msg: string}|{success: boolean, msg: string, result: {answer: *, search: string}}>}
  */
 async function action(page, item) {
@@ -33,7 +33,7 @@ async function action(page, item) {
     console.log(`questionText:${item.question_content}`)
     await waitSafe(2000);
 
-    await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_1.png`});
+    await page.screenshot({path: process.env.PUPPETEER_SCREEN_SHOT_DIR + `/screenshot_${item.ai_bot_id}_${item.id}_1.png`});
 
     // 判断联网搜索的开关是否开启
     // 等待联网搜索开关的父元素元素加载
@@ -92,7 +92,7 @@ async function action(page, item) {
 
     if (answerText.length <= 10 || answerText === item.question_content) {
         await clickBlank(page)
-        await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_2.png`});
+        await page.screenshot({path: process.env.PUPPETEER_SCREEN_SHOT_DIR + `/screenshot_${item.ai_bot_id}_${item.id}_2.png`});
         return {success: false, msg: "获取回答内容失败"}
     }
 

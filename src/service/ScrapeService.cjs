@@ -23,7 +23,7 @@ class ScrapeService extends BaseService {
     // @param {number} aiBotId : AI 机器人 ID
     // @param {number} [limit=100] : 获取数量限制
 
-    // @returns {Promise<Array<{id: number, question_id: number, task_id: number}>>}
+    // @returns {Promise<Array<{id: number, question_id: number, task_id: number, ai_bot_id: number, execute_status: number}>>}
     async getTaskPlanList(aiBotId, limit = 100) {
         return await TaskExecutePlanModel.find({
             ai_bot_id: aiBotId,

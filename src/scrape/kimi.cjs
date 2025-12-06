@@ -4,7 +4,7 @@ const {humanType, clickBlank} = require("../util/page.cjs");
 /**
  *
  * @param page
- * @param item {{question_content: string, id: number}}
+ * @param item {{question_content: string, id: number, ai_bot_id: number}}
  * @returns {Promise<{success: boolean, msg: string}|{success: boolean, msg: string, result: {answer: *, search: string}}>}
  */
 async function action(page, item) {
@@ -35,7 +35,7 @@ async function action(page, item) {
 
 
     // 发送前的截图 debug
-    await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_1.png`});
+    await page.screenshot({path: process.env.PUPPETEER_SCREEN_SHOT_DIR + `/screenshot_${item.ai_bot_id}_${item.id}_1.png`});
 
     //点击发送按钮
     await page.keyboard.press('Enter');
