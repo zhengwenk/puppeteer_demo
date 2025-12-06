@@ -7,7 +7,7 @@ const ScrapeService = require("./service/ScrapeService.cjs");
 const {lockProcess} = require("./util/lock.cjs");
 const fs = require('fs');
 
-const execOnceLimit = 100;
+const execOnceLimit = 200;
 const aiAccountId = Number(process.env.AI_ACCOUNT_ID) || 0;
 const lockFileDir = process.env.PUPPETEER_LOCK_FILE_DIR || '';
 
