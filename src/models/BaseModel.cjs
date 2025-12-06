@@ -67,7 +67,7 @@ class BaseModel {
     }
 
     async find(where = {}, columns = ['*'], options = {}, trx = null) {
-        let qb = this.query(trx).select(columns);
+        let qb = this.query(trx).select(columns).where(where);
 
         // orderBy
         if (options.orderBy) {

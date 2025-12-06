@@ -5,10 +5,10 @@ const ScrapeService = require("./ScrapeService.cjs");
 
     const service = new ScrapeService();
 
-    const result = await service.getTaskPlanList(1, 10);
+    const result = await service.getTaskPlanList(2, 10);
 
-    const question = await service.getTaskPlanQuestionById(3);
+    //const question = await service.getTaskPlanQuestionById(3);
 
-    console.log(result, question)
+    console.log(result)
 
 })();
