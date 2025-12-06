@@ -35,7 +35,7 @@ async function action(page, item) {
 
 
     // 发送前的截图 debug
-    await page.screenshot({path: process.env.PUPPETEER_SCREEN_SHOT_DIR + `/screenshot_${item.ai_bot_id}_${item.id}_1.png`});
+    //await page.screenshot({path: process.env.PUPPETEER_SCREEN_SHOT_DIR + `/screenshot_${item.ai_bot_id}_${item.id}_1.png`});
 
     //点击发送按钮
     await page.keyboard.press('Enter');
@@ -64,8 +64,8 @@ async function action(page, item) {
     console.log("ai:" + answerText);
 
     if (answerText.length <= 10 || answerText === item.question_content) {
-        await clickBlank(page)
-        await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_2.png`});
+        //await clickBlank(page)
+        //await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + `/screenshot_${item.id}_2.png`});
         return {success: false, msg: "获取回答内容失败"}
     }
 
