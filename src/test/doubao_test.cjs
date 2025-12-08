@@ -59,7 +59,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     if (textEl) {
         // 可选：聚焦并清空（如果已有默认内容）
         await page.focus(textSelector);
-        const textToType = '镁光退出消费电子市场的原因是什么？请给出详细分析，并提供相关的参考资料。'; // 输入内容
+        const textToType = '英睿达和镁光是什么关系，为什么也突然退出市场？'; // 输入内容
         await page.type(textSelector, textToType, {delay: 50}); // delay 毫秒，可设为 0
         await waitSafe(page, 3000);
     }
@@ -162,6 +162,6 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
         console.log(results);
     }
 
-    await browser.close();
+    //await browser.close();
 
 })();
