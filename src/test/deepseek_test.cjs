@@ -58,7 +58,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
         });
     });
 
-    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
     const targetUrl = "https://chat.deepseek.com";
     await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
@@ -110,23 +110,49 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
-        console.log("start.....");
-        const containers = [...document.querySelectorAll('.dad65929 .ds-message')];
-        if (!containers.length) return '';
-        console.log(containers);
-        const last = containers[containers.length - 1];
-        if (!last) return '';
-        console.log(last);
+        const root = document.querySelector('.ds-markdown');
+        if (!root) return "";
 
-        const parts = [...last.querySelectorAll('.ds-markdown-paragraph')];
-        if (!parts.length) return '';
+        // 遍历子节点，保留阅读顺序
+        function extract(node) {
+            let result = "";
 
-        console.log(parts);
+            // 如果是文本节点 → 取内容
+            if (node.nodeType === Node.TEXT_NODE) {
+                return node.textContent.trim() + " ";
+            }
 
-        const answer = parts.map(el => el.innerText.trim()).join("\n");
+            // 如果是元素 → 遍历子元素
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                // 表格也会被当成普通元素处理
+                for (const child of node.childNodes) {
+                    result += extract(child);
+                }
+            }
+
+            return result;
+        }
+
+        const answer = extract(root)
+            .replace(/\s+/g, " ")  // 去重空白
+            .trim();
+        // console.log("start.....");
+        // const containers = [...document.querySelectorAll('.dad65929 .ds-message')];
+        // if (!containers.length) return '';
+        // console.log(containers);
+        // const last = containers[containers.length - 1];
+        // if (!last) return '';
+        // console.log(last);
+        //
+        // const parts = [...last.querySelectorAll('.ds-markdown-paragraph')];
+        // if (!parts.length) return '';
+        //
+        // console.log(parts);
+        //
+        // const answer = parts.map(el => el.innerText.trim()).join("\n");
 
         const searchResultBtn = document.getElementsByClassName('f93f59e4')[0];
-
+        console.log(searchResultBtn);
         if (searchResultBtn) {
             searchResultBtn.click();
         }
