@@ -106,7 +106,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     await page.click('div.ds-icon-button._7436101');
 
     // 等待30s
-    await waitSafe(page, 30000);
+    await waitSafe(page, 60000);
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
