@@ -31,7 +31,7 @@ class ScrapeService extends BaseService {
         return await TaskExecutePlanModel.find({
             ai_bot_id: aiBotId,
             execute_status: ScrapeService.executeStatusWaiting,
-        }, ['id', 'question_id', 'task_id'], {
+        }, ['id', 'log_id', 'question_id', 'task_id', 'ai_engine', 'ai_bot_id'], {
             orderBy: ['id', 'asc'],
             limit: limit
         });
