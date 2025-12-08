@@ -145,6 +145,6 @@ async function action(page, item) {
 }
 
 module.exports = {
-    channel: "元宝",
+    channel: "yuanbao",
     action,
 };
