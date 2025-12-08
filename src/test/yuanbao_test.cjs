@@ -53,7 +53,7 @@ puppeteer.use(StealthPlugin());
     await editor.focus();
 
     // 2 输入文本
-    const message = "帮我写一篇去韩国旅游的详细攻略，包含景点、美食、住宿和交通，一家四口出行。";
+    const message = "镁光退出消费电子市场的原因是什么？请给出详细分析，并提供相关的参考资料。";
     await page.keyboard.type(message, {delay: 50}); // delay 模拟人工输入
 
     // 3 模拟按下 Enter 发送

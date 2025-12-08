@@ -70,7 +70,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     if (!textEl) {
         return {success: false, msg: "获取文本框失败"}
     }
-    const text = '感冒有什么症状？';
+    const text = '镁光退出消费电子市场的原因是什么？请给出详细分析，并提供相关的参考资料。';
     await page.focus(textSelector);
     //await page.click(textSelector);
     await page.type(textSelector, text, {delay: 50}); // delay 毫秒，可设为 0
