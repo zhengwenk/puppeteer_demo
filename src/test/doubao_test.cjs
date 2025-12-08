@@ -25,11 +25,11 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
 (async function () {
     // 启动一个浏览器
     const browser = await puppeteer.launch({
-        headless: "new",
-        //headless: false,
+        //headless: "new",
+        headless: false,
         devtools: false,
         //defaultViewport: null,
-        defaultViewport: {width: 1440, height: 900},
+        //defaultViewport: {width: 1440, height: 900},
         args: [
             '--start-maximized',
             '--no-sandbox',
@@ -39,7 +39,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
             '--disable-blink-features=AutomationControlled',
             //'--proxy-server=http://114.80.161.93:62000'
         ],
-        executablePath: executablePath(), // 指向系统 Chrome（可替换为你的 Chrome 路径）
+        executablePath: "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + "/zhengwenkai",
     });
 
