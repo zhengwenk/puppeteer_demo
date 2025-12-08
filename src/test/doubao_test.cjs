@@ -59,7 +59,7 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     if (textEl) {
         // 可选：聚焦并清空（如果已有默认内容）
         await page.focus(textSelector);
-        const textToType = '我想去韩国，给我一个详细攻略。一家四口。'; // 输入内容
+        const textToType = '镁光退出消费电子市场的原因是什么？请给出详细分析，并提供相关的参考资料。'; // 输入内容
         await page.type(textSelector, textToType, {delay: 50}); // delay 毫秒，可设为 0
         await waitSafe(page, 3000);
     }
@@ -144,15 +144,17 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
             return items.map(item => {
                 // 搜索子元素 class 以 "search-item-title-" 开头
                 const titleEl = item.querySelector('[class*="search-item-title-"]');
+                const summaryEl = item.querySelector('[class*="search-item-summary-"]');
                 // 搜索子元素 class 以 "footer-title-" 开头
-                const footerEl = item.querySelector('[class*="footer-title-"]');
+                const sourceEl = item.querySelector('[class*="footer-title-"]');
 
                 const linkEl = item.querySelector('a');
 
                 return {
-                    title: titleEl ? titleEl.innerText.trim() : null,
-                    footer: footerEl ? footerEl.innerText.trim() : null,
-                    link: linkEl ? linkEl.href.trim() : null
+                    title: titleEl ? titleEl.innerText.trim() : "",
+                    snippet: summaryEl ? summaryEl.innerText.trim() : "",
+                    source: sourceEl ? sourceEl.innerText.trim() : "",
+                    link: linkEl ? linkEl.href.trim() : ""
                 };
             });
         });
