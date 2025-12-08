@@ -1,9 +1,9 @@
-const handlers = require('./scrape/index.cjs');
-const {createBrowser, createPage} = require("./browser.cjs");
-const {asyncForEach} = require("./util/array.cjs");
-const {randomInt} = require("./util/math.cjs")
-const {removeDirSync} = require("./util/file.cjs");
-const ScrapeService = require("./service/ScrapeService.cjs");
+const handlers = require('../scrape');
+const {createBrowser, createPage} = require("../browser.cjs");
+const {asyncForEach} = require("../util/array.cjs");
+const {randomInt} = require("../util/math.cjs")
+const {removeDirSync} = require("../util/file.cjs");
+const ScrapeService = require("../service/ScrapeService.cjs");
 
 const execOnceLimit = 100;
 

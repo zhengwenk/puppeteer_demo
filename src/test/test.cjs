@@ -1,4 +1,4 @@
-const {lockProcess} = require("./util/lock.cjs");
+const {lockProcess} = require("../util/lock.cjs");
 const fs = require("fs");
 
 const aiAccountId = Number(process.env.AI_ACCOUNT_ID) || 0;
