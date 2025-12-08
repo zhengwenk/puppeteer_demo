@@ -65,26 +65,39 @@ async function action(page, item) {
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
-        console.log("start.....");
-        const containers = [...document.querySelectorAll('.dad65929 .ds-message')];
-        if (!containers.length) return '';
-        console.log(containers);
-        const last = containers[containers.length - 1];
-        if (!last) return '';
-        console.log(last);
+        const root = document.querySelector('.ds-markdown');
+        if (!root) return "";
 
-        const parts = [...last.querySelectorAll('.ds-markdown-paragraph')];
-        if (!parts.length) return '';
+        // 遍历子节点，保留阅读顺序
+        function extract(node) {
+            let result = "";
 
-        console.log(parts);
+            // 如果是文本节点 → 取内容
+            if (node.nodeType === Node.TEXT_NODE) {
+                return node.textContent.trim() + " ";
+            }
 
-        const answer = parts.map(el => el.innerText.trim()).join("\n");
+            // 如果是元素 → 遍历子元素
+            if (node.nodeType === Node.ELEMENT_NODE) {
+                // 表格也会被当成普通元素处理
+                for (const child of node.childNodes) {
+                    result += extract(child);
+                }
+            }
+
+            return result;
+        }
+
+        const answer = extract(root)
+            .replace(/\s+/g, " ")  // 去重空白
+            .trim();
 
         const searchResultBtn = document.getElementsByClassName('f93f59e4')[0];
 
         if (searchResultBtn) {
             searchResultBtn.click();
         }
+
         return answer
     });
 

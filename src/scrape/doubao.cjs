@@ -109,15 +109,17 @@ async function action(page, item) {
             return items.map(item => {
                 // 搜索子元素 class 以 "search-item-title-" 开头
                 const titleEl = item.querySelector('[class*="search-item-title-"]');
+                const summaryEl = item.querySelector('[class*="search-item-summary-"]');
                 // 搜索子元素 class 以 "footer-title-" 开头
-                const footerEl = item.querySelector('[class*="footer-title-"]');
+                const sourceEl = item.querySelector('[class*="footer-title-"]');
 
                 const linkEl = item.querySelector('a');
 
                 return {
-                    title: titleEl ? titleEl.innerText.trim() : null,
-                    footer: footerEl ? footerEl.innerText.trim() : null,
-                    link: linkEl ? linkEl.href.trim() : null
+                    title: titleEl ? titleEl.innerText.trim() : "",
+                    snippet: summaryEl ? summaryEl.innerText.trim() : "",
+                    source: sourceEl ? sourceEl.innerText.trim() : "",
+                    link: linkEl ? linkEl.href.trim() : ""
                 };
             });
         });

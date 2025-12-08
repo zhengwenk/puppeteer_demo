@@ -61,7 +61,7 @@ async function action(page, item) {
         return parts.map(el => el.innerText.trim()).join("\n");
     });
 
-    console.log("ai:" + answerText);
+    //console.log("ai:" + answerText);
 
     if (answerText.length <= 10 || answerText === item.question_content) {
         //await clickBlank(page)
@@ -86,10 +86,10 @@ async function action(page, item) {
             return data;
         }
         sites.forEach(site => {
-            const url = site.getAttribute('href');
+            const link = site.getAttribute('href');
             // 提取网站名称（可能需要处理 <svg> 旁边的文本）
             const nameElement = site.querySelector('div.header span.name');
-            const name = nameElement ? nameElement.textContent.trim() : 'N/A';
+            const source = nameElement ? nameElement.textContent.trim() : 'N/A';
 
             // 提取标题
             const titleElement = site.querySelector('p.title');
@@ -99,7 +99,7 @@ async function action(page, item) {
             const snippetElement = site.querySelector('p.snippet');
             const snippet = snippetElement ? snippetElement.textContent.trim() : 'N/A';
 
-            data.push({url, name, title, snippet});
+            data.push({link, source, title, snippet});
         });
 
         return data;

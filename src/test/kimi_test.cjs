@@ -122,20 +122,20 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
             return data;
         }
         sites.forEach(site => {
-            const url = site.getAttribute('href');
+            const link = site.getAttribute('href');
             // 提取网站名称（可能需要处理 <svg> 旁边的文本）
             const nameElement = site.querySelector('div.header span.name');
-            const name = nameElement ? nameElement.textContent.trim() : 'N/A';
+            const source = nameElement ? nameElement.textContent.trim() : '';
 
             // 提取标题
             const titleElement = site.querySelector('p.title');
-            const title = titleElement ? titleElement.textContent.trim() : 'N/A';
+            const title = titleElement ? titleElement.textContent.trim() : '';
 
             // 提取摘要/片段 (snippet)
             const snippetElement = site.querySelector('p.snippet');
-            const snippet = snippetElement ? snippetElement.textContent.trim() : 'N/A';
+            const snippet = snippetElement ? snippetElement.textContent.trim() : '';
 
-            data.push({url, name, title, snippet});
+            data.push({link, source, title, snippet});
         });
 
         return data;
