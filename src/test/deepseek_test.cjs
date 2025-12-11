@@ -182,7 +182,7 @@ function getQuestionText() {
 
     console.log("AI 回复：", answerText);
 
-    if (answerText.length <= 10 || answerText === text) {
+    if (answerText.length <= 10 || answerText === questionText) {
         //await clickBlank(page)
         await page.screenshot({
             path: `${process.env.PUPPETEER_USER_QRCODE_IMG_DIR}/screenshot_test_2.png`,
