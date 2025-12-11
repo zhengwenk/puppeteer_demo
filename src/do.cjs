@@ -6,6 +6,7 @@ const {randomInt} = require("./util/math.cjs")
 const ScrapeService = require("./service/ScrapeService.cjs");
 const {lockProcess} = require("./util/lock.cjs");
 const fs = require('fs');
+const {waitSafe} = require("./util/wait");
 
 const execOnceLimit = 200;
 const aiAccountId = Number(process.env.AI_ACCOUNT_ID) || 0;
@@ -81,7 +82,7 @@ if (!isLocked) {
         // return
 
         // 失败重试id列表
-        const failTaskIds = [];
+        //const failTaskIds = [];
 
         await asyncForEach(list, async (item, index) => {
             // 开始任务
@@ -117,7 +118,7 @@ if (!isLocked) {
                 // 打开目标页面
                 console.log(aiAccount.url);
 
-                await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
+                await page.goto(aiAccount.url, {waitUntil: 'networkidle2', timeout: 10000});
 
                 let success, msg, result;
 
@@ -126,17 +127,16 @@ if (!isLocked) {
                 if (success) {
                     await scrapeService.completeTaskPlan(item, resultId, msg, result);
                 } else {
-                    if (failTaskIds.includes(item.id)) {
-                        await scrapeService.failTaskPlan(item, resultId, msg, result);
-                    } else {
-                        //重试一次
-                        ({success, msg, result} = await handler.action(page, questionInfo))
+                    // 等待一会儿重试一次
+                    await waitSafe(page, randomInt(30000, 60000));
+                    await page.goto(aiAccount.url, {waitUntil: 'networkidle2', timeout: 10000});
 
-                        if (success) {
-                            await scrapeService.completeTaskPlan(item, resultId, msg, result);
-                        } else {
-                            await scrapeService.failTaskPlan(item, resultId, msg, result);
-                        }
+                    ({success, msg, result} = await handler.action(page, questionInfo))
+
+                    if (success) {
+                        await scrapeService.completeTaskPlan(item, resultId, msg, result);
+                    } else {
+                        await scrapeService.failTaskPlan(item, resultId, msg, result);
                     }
                 }
 

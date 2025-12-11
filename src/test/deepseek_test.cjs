@@ -22,7 +22,21 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     }
 }
 
+function getQuestionText() {
+    const args = process.argv.slice(2);
+    if (args.length > 0) {
+        return args[0];
+    }
+}
+
 (async function () {
+    const questionText = getQuestionText();
+
+    if (!questionText) {
+        console.log("请提供问题文本作为命令行参数");
+        return;
+    }
+
     // 启动一个浏览器
     const browser = await puppeteer.launch({
         //headless: "new",
@@ -70,10 +84,10 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     if (!textEl) {
         return {success: false, msg: "获取文本框失败"}
     }
-    const text = '镁光退出消费电子市场的原因是什么？请给出详细分析，并提供相关的参考资料。';
+
     await page.focus(textSelector);
     //await page.click(textSelector);
-    await page.type(textSelector, text, {delay: 50}); // delay 毫秒，可设为 0
+    await page.type(textSelector, questionText, {delay: 50}); // delay 毫秒，可设为 0
     await page.mouse.move(200, 300);
     await page.evaluate(() => window.scrollBy(0, 400));
     await waitSafe(2000);
