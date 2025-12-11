@@ -79,10 +79,16 @@ function getQuestionText() {
 
     // 等待文本输入框元素出现（最多等 5 秒）
     const textSelector = 'textarea';
-    const textEl = await waitForSelectorSafe(page, textSelector, {visible: true, timeout: 5000});
+    let textEl = await waitForSelectorSafe(page, textSelector, {visible: true, timeout: 10000});
 
     if (!textEl) {
-        return {success: false, msg: "获取文本框失败"}
+        await page.reload({waitUntil: 'domcontentloaded'});
+        await waitSafe(3000);
+        // 等待文本输入框元素出现（最多等 5 秒）
+        textEl = await waitForSelectorSafe(page, textSelector, {visible: true, timeout: 10000});
+        if (!textEl) {
+            return {success: false, msg: "获取文本框失败"}
+        }
     }
 
     await page.focus(textSelector);
