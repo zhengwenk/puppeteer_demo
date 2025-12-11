@@ -40,6 +40,19 @@ class ScrapeService extends BaseService {
     // 开始任务计划
     async startTaskPlan(taskPlanInfo) {
 
+        const result = await TaskExecutePlanResultModel.findOne({
+            plan_id: taskPlanInfo.id,
+        })
+
+        // 如果记录已经存在并且状态是进行中，则直接返回
+        if (result) {
+            if (result.execute_status === ScrapeService.executeStatusInProgress) {
+                return result.id;
+            } else {
+                return 0;
+            }
+        }
+
         const resultId = await TaskExecutePlanResultModel.create({
             question_id: taskPlanInfo.question_id,
             task_id: taskPlanInfo.task_id,

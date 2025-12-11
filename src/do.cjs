@@ -117,8 +117,7 @@ if (!isLocked) {
                 await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
                 const {success, msg, result} = await handler.action(page, questionInfo);
 
-                console.log(success, msg, result);
-
+                //console.log(success, msg, result);
                 if (success) {
                     await scrapeService.completeTaskPlan(item, resultId, msg, result);
                 }

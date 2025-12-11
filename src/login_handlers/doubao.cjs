@@ -82,6 +82,8 @@ async function doLogin(page, aiAccount) {
     // 刷新页面，检查是否登录成功
     await page.reload({ waitUntil: 'networkidle2' });
 
+    await waitSafe(page, 5000);
+
     return await checkLogin(page, aiAccount.nickname)
 }
 
