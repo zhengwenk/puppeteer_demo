@@ -23,7 +23,7 @@ async function action(page, item) {
 
     // 等待文本输入框元素出现（最多等 5 秒）
     const textSelector = 'div.ql-editor';
-    const textEl = await page.waitForSelector(textSelector, {visible: true, timeout: 5000});
+    const textEl = await page.waitForSelector(textSelector, {visible: true, timeout: 10000});
 
     if (!textEl) {
         return {success: false, msg: "获取文本框失败"}

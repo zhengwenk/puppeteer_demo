@@ -80,6 +80,9 @@ if (!isLocked) {
         // console.log(await page.content());
         // return
 
+        // 失败重试id列表
+        const failTaskIds = [];
+
         await asyncForEach(list, async (item, index) => {
             // 开始任务
             console.log(`开始处理任务, 任务ID: ${item.id}`);
@@ -97,7 +100,7 @@ if (!isLocked) {
                 const questionInfo = await scrapeService.getTaskPlanQuestionById(item.question_id);
 
                 if (!questionInfo) {
-                    // 任务问题不存，标记为失败
+                    // 任务问题不存在，标记为失败
                     console.log(`任务失败1`);
                     await scrapeService.failTaskPlan(item, resultId, "任务不存在");
                     return;
@@ -115,11 +118,26 @@ if (!isLocked) {
                 console.log(aiAccount.url);
 
                 await page.goto(aiAccount.url, {waitUntil: 'domcontentloaded', timeout: 10000});
-                const {success, msg, result} = await handler.action(page, questionInfo);
 
-                //console.log(success, msg, result);
+                let success, msg, result;
+
+                ({success, msg, result} = await handler.action(page, questionInfo))
+
                 if (success) {
                     await scrapeService.completeTaskPlan(item, resultId, msg, result);
+                } else {
+                    if (failTaskIds.includes(item.id)) {
+                        await scrapeService.failTaskPlan(item, resultId, msg, result);
+                    } else {
+                        //重试一次
+                        ({success, msg, result} = await handler.action(page, questionInfo))
+
+                        if (success) {
+                            await scrapeService.completeTaskPlan(item, resultId, msg, result);
+                        } else {
+                            await scrapeService.failTaskPlan(item, resultId, msg, result);
+                        }
+                    }
                 }
 
                 //await browser.close();
