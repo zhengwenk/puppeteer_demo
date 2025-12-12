@@ -4,7 +4,7 @@ const {executablePath} = require('puppeteer');
 const {waitSafe, waitForSelectorSafe, waitForGotoSafe, waitForStableContent} = require("../util/wait.cjs");
 const TimeOut = require("../util/timeout.cjs");
 const Timeout = require("../util/timeout.cjs");
-const {getQuestionText} = require("util_argv.cjs");
+const {getQuestionText} = require("./util_argv.cjs");
 
 puppeteer.use(StealthPlugin());
 

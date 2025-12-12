@@ -5,12 +5,9 @@ const {yargs} = require('yargs');
 const {waitForSelectorSafe, waitSafe, waitForGotoSafe} = require('../util/wait.cjs');
 const Timeout = require('../util/timeout.cjs');
 const {waitForStableContent} = require("../util/wait.cjs");
-const {getQuestionText} = require("util_argv.cjs");
+const {getQuestionText} = require("./util_argv.cjs");
 
 puppeteer.use(StealthPlugin());
-
-
-
 
 (async function () {
     const questionText = getQuestionText();
