@@ -1,6 +1,11 @@
 const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
 const {humanType, clickBlank} = require("../util/page.cjs");
+const TIMEOUT = require('../util/timeout.cjs');
 
+function getTextSelector() {
+    // 等待文本输入框元素出现（最多等 5 秒）
+    return 'textarea[data-testid="chat_input_input"]';
+}
 
 async function action(page, item) {
     // //获取新对话的按钮
@@ -16,15 +21,8 @@ async function action(page, item) {
     //     page.click(newChatSelector)
     // ]);
 
-    // 等待文本输入框元素出现（最多等 5 秒）
-    const textSelector = 'textarea[data-testid="chat_input_input"]';
-    const textEl = await waitForSelectorSafe(page, textSelector, { visible: true, timeout: 5000 });
 
-    if (!textEl) {
-        return {success: false, msg: "获取文本框失败"}
-    }
-
-    await humanType(page, textSelector, item.question_content);
+    await humanType(page, getTextSelector(), item.question_content);
     console.log(`questionText:${item.question_content}`)
     await waitSafe(2000);
 
@@ -66,7 +64,7 @@ async function action(page, item) {
     //查找参考资料区域
     const searchSelector = 'div[data-testid="search-reference-ui"]';
     const searchEl = await waitForSelectorSafe(
-        page, searchSelector, {visible: true, timeout: 60000}
+        page, searchSelector, {visible: true, timeout: 80000}
     );
 
     // 获取所有回答文本（最新那条）
@@ -135,4 +133,5 @@ async function action(page, item) {
 module.exports = {
     channel: "doubao",
     action,
+    getTextSelector
 };

@@ -52,8 +52,74 @@ async function waitForClass(page, selector, className, options = {}) {
     }
 }
 
+async function waitForGotoSafe(page, url, options = {}) {
+    const {
+        waitSelector = null,       // 需要等待的关键元素
+        gotoTimeout = 30000,       // goto 超时
+        selectorTimeout = 15000    // selector 超时
+    } = options;
+
+    function tag(promise, tagName) {
+        return promise.then(
+            (value) => ({ok: true, tag: tagName, value}),
+            (error) => ({ok: false, tag: tagName, error})
+        );
+    }
+
+    const tasks = [
+        tag(page.goto(url, {waitUntil: 'networkidle2', timeout: gotoTimeout}), 'goto')
+    ];
+
+    if (waitSelector) {
+        const selectorStr = typeof waitSelector === 'function' ? waitSelector(page) : waitSelector;
+        tasks.push(
+            tag(waitForSelectorSafe(page, selectorStr, {visible: true, timeout: selectorTimeout}), 'selector')
+        );
+    }
+
+    return await Promise.race(tasks); // 统一返回格式：{ ok, tag, value?, error? }
+}
+
+// 等待某个容器内的内容稳定下来，即在 stableMs 时间内不再变化
+async function waitForStableContent(page, selector, stableMs = 1500, timeout = 20000) {
+    //起始时间
+    const start = Date.now();
+
+    // 上一次内容
+    let lastText = "";
+
+    // 上一次内容变化时间
+    let lastChangeTime = Date.now();
+
+    while (true) {
+        // 查询容器内的内容
+        const text = await page.$eval(selector, el => el.innerText.trim()).catch(() => "");
+
+        // 内容有变化
+        if (text !== lastText) {
+            lastText = text;
+            lastChangeTime = Date.now(); // 内容刚刚更新
+        }
+
+        // 内容稳定了一段时间
+        if (Date.now() - lastChangeTime >= stableMs) {
+            return;
+        }
+
+        // 超时保护
+        if (Date.now() - start > timeout) {
+            return;
+        }
+
+        await waitSafe(page, 3000)
+    }
+}
+
+
 module.exports = {
     waitSafe,
     waitForSelectorSafe,
     waitForClass,
+    waitForGotoSafe,
+    waitForStableContent
 };

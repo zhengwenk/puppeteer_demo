@@ -6,7 +6,8 @@ const {randomInt} = require("./util/math.cjs")
 const ScrapeService = require("./service/ScrapeService.cjs");
 const {lockProcess} = require("./util/lock.cjs");
 const fs = require('fs');
-const {waitSafe} = require("./util/wait.cjs");
+const {waitSafe, waitForGotoSafe} = require("./util/wait.cjs");
+const TIMEOUT = require('./util/timeout.cjs');
 
 const execOnceLimit = 200;
 const aiAccountId = Number(process.env.AI_ACCOUNT_ID) || 0;
@@ -117,18 +118,34 @@ if (!isLocked) {
                 //removeDirSync(userDataDir);
                 // 打开目标页面
                 console.log(aiAccount.url);
+                //await page.goto(aiAccount.url, {waitUntil: 'networkidle2', timeout: TIMEOUT.T10S});
+                const gotoResult = await waitForGotoSafe(
+                    page, aiAccount.url, {
+                        waitSelector: handler.getTextSelector(),
+                    }
+                );
 
-                await page.goto(aiAccount.url, {waitUntil: 'networkidle2', timeout: 10000});
+                if (!gotoResult.ok) {
+                    console.log(`${gotoResult.tag} 失败`, gotoResult.error.message)
+                    const gotoResult = await waitForGotoSafe(
+                        page, aiAccount.url, {
+                            waitSelector: handler.getTextSelector(),
+                        }
+                    );
+
+                    if (!gotoResult.ok) {
+                        console.log(`${gotoResult.tag} 失败`, gotoResult.error.message)
+                        await scrapeService.failTaskPlan(item, resultId, `打开页面失败: ${gotoResult.error.message}`);
+                    }
+                }
 
                 let success, msg, result;
-
                 ({success, msg, result} = await handler.action(page, questionInfo))
-
                 if (success) {
                     await scrapeService.completeTaskPlan(item, resultId, msg, result);
                 } else {
                     // 等待一会儿重试一次
-                    await waitSafe(page, randomInt(30000, 60000));
+                    await waitSafe(page, randomInt(60000, 120000));
                     await page.goto(aiAccount.url, {waitUntil: 'networkidle2', timeout: 10000});
 
                     ({success, msg, result} = await handler.action(page, questionInfo))

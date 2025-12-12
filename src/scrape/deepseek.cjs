@@ -1,5 +1,11 @@
-const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
+const {waitForSelectorSafe, waitSafe, waitForStableContent} = require("../util/wait.cjs");
 const {humanType, clickBlank} = require("../util/page.cjs");
+const TIMEOUT = require('../util/timeout.cjs');
+
+function getTextSelector() {
+    // 等待文本输入框元素出现（最多等 5 秒）
+    return 'textarea';
+}
 
 /**
  *
@@ -21,23 +27,17 @@ async function action(page, item) {
     //     page.click(newChatSelector)
     // ]);
 
-    // 等待文本输入框元素出现（最多等 5 秒）
-    const textSelector = 'textarea';
-    const textEl = await waitForSelectorSafe(page, textSelector, {visible: true, timeout: 5000});
-
-    if (!textEl) {
-        return {success: false, msg: "获取文本框失败"}
-    }
-
-    await humanType(page, textSelector, item.question_content);
+    await humanType(page, getTextSelector(), item.question_content);
     console.log(`questionText:${item.question_content}`)
-    await waitSafe(2000);
+    await waitSafe(TIMEOUT.T3S);
 
     //await page.screenshot({path: process.env.PUPPETEER_SCREEN_SHOT_DIR + `/screenshot_${item.id}_1.png`});
 
     // 判断联网搜索的开关是否开启
     // 等待联网搜索开关的父元素元素加载
-    await waitForSelectorSafe(page, 'div.ec4f5d61', {visible: true, timeout: 5000});
+    await waitForSelectorSafe(
+        page, 'div.ec4f5d61', {visible: true, timeout: TIMEOUT.T5S}
+    );
 
     // 获取父元素下的第二个 button
     const isSelected = await page.evaluate(() => {
@@ -57,11 +57,13 @@ async function action(page, item) {
     });
 
     console.log('第二个 button 是否选中：', isSelected);
-    await waitSafe(page, 1000);
+    await waitSafe(page, TIMEOUT.T3S);
 
     //点击发送按钮
     await page.click('div.ds-icon-button._7436101');
-    await waitSafe(page, 60000);
+    //await waitSafe(page, TIMEOUT.T120S);
+
+    await waitForStableContent(page, '.ds-markdown', TIMEOUT.T30S, TIMEOUT.T120S);
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
@@ -101,7 +103,7 @@ async function action(page, item) {
         return answer
     });
 
-    console.log("ai:" + answerText);
+    //console.log("ai:" + answerText);
 
     if (answerText.length <= 10 || answerText === item.question_content) {
         //await clickBlank(page)
@@ -142,4 +144,5 @@ async function action(page, item) {
 module.exports = {
     channel: "deepseek",
     action,
+    getTextSelector,
 };

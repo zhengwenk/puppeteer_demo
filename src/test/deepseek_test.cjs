@@ -2,26 +2,13 @@ const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const {executablePath} = require('puppeteer');
 const {yargs} = require('yargs');
+const {waitForSelectorSafe, waitSafe, waitForGotoSafe} = require('../util/wait.cjs');
+const Timeout = require('../util/timeout.cjs');
+const {waitForStableContent} = require("../util/wait");
+const TIMEOUT = require("../util/timeout");
 
 puppeteer.use(StealthPlugin());
 
-async function waitSafe(page, ms) {
-    if (page && typeof page.waitForTimeout === 'function') {
-        return page.waitForTimeout(ms);
-    }
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
-
-async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
-    try {
-        const el = await page.waitForSelector(selector, options);
-        console.log(`找到元素: ${selector}`);
-        return el;
-    } catch (err) {
-        console.log(`未找到元素: ${selector}，原因: ${err.message}`);
-        return null;
-    }
-}
 
 function getQuestionText() {
     const args = process.argv.slice(2);
@@ -76,21 +63,37 @@ function getQuestionText() {
     //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
     const targetUrl = "https://chat.deepseek.com";
-    await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
+
+    const textSelector = 'textarea';
+
+    const gotoResult = await waitForGotoSafe(
+        page,
+        targetUrl,
+        {
+            waitSelector: textSelector,
+        }
+    );
+
+    if (!gotoResult.ok) {
+        console.log(`导航到目标页面失败:${gotoResult.tag}|${gotoResult.error.message}`);
+        return;
+    }
+
+    //await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
 
     // 等待文本输入框元素出现（最多等 5 秒）
-    const textSelector = 'textarea';
-    let textEl = await waitForSelectorSafe(page, textSelector, {visible: true, timeout: 10000});
+    //const textSelector = 'textarea';
+    //let textEl = await waitForSelectorSafe(page, textSelector, {visible: true, timeout: 10000});
 
-    if (!textEl) {
-        await page.reload({waitUntil: 'domcontentloaded'});
-        await waitSafe(3000);
-        // 等待文本输入框元素出现（最多等 5 秒）
-        textEl = await waitForSelectorSafe(page, textSelector, {visible: true, timeout: 10000});
-        if (!textEl) {
-            return {success: false, msg: "获取文本框失败"}
-        }
-    }
+    // if (!textEl) {
+    //     await page.reload({waitUntil: 'domcontentloaded'});
+    //     await waitSafe(3000);
+    //     // 等待文本输入框元素出现（最多等 5 秒）
+    //     textEl = await waitForSelectorSafe(page, textSelector, {visible: true, timeout: 10000});
+    //     if (!textEl) {
+    //         return {success: false, msg: "获取文本框失败"}
+    //     }
+    // }
 
     await page.focus(textSelector);
     //await page.click(textSelector);
@@ -127,7 +130,8 @@ function getQuestionText() {
     await page.click('div.ds-icon-button._7436101');
 
     // 等待30s
-    await waitSafe(page, 60000);
+    //await waitSafe(page, 60000);
+    await waitForStableContent(page, '.ds-markdown', TIMEOUT.T30S, TIMEOUT.T120S);
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
