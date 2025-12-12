@@ -6,7 +6,7 @@ const {randomInt} = require("./util/math.cjs")
 const ScrapeService = require("./service/ScrapeService.cjs");
 const {lockProcess} = require("./util/lock.cjs");
 const fs = require('fs');
-const {waitSafe} = require("./util/wait");
+const {waitSafe} = require("./util/wait.cjs");
 
 const execOnceLimit = 200;
 const aiAccountId = Number(process.env.AI_ACCOUNT_ID) || 0;
