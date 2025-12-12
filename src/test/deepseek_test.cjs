@@ -4,8 +4,8 @@ const {executablePath} = require('puppeteer');
 const {yargs} = require('yargs');
 const {waitForSelectorSafe, waitSafe, waitForGotoSafe} = require('../util/wait.cjs');
 const Timeout = require('../util/timeout.cjs');
-const {waitForStableContent} = require("../util/wait");
-const TIMEOUT = require("../util/timeout");
+const {waitForStableContent} = require("../util/wait.cjs");
+const TIMEOUT = require("../util/timeout.cjs");
 
 puppeteer.use(StealthPlugin());
 
