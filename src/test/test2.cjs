@@ -1,3 +1,4 @@
+const {yargs} = require('yargs');
 (function () {
     const a = ['晚上好', '啊山'];
 

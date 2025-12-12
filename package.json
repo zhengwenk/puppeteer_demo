@@ -8,6 +8,7 @@
     "mysql2": "^3.15.3",
     "puppeteer": "24.30.0",
     "puppeteer-extra": "^3.3.6",
-    "puppeteer-extra-plugin-stealth": "^2.11.2"
+    "puppeteer-extra-plugin-stealth": "^2.11.2",
+    "yargs": "^18.0.0"
   }
 }

@@ -127,10 +127,10 @@ async function action(page, item) {
             let summary = summaryElement ? summaryElement.textContent.trim() : '';
 
             data.push({
-                url: url,
-                name: websiteName,
+                link: url,
+                source: websiteName,
                 title: title,
-                summary: summary
+                snippet: summary
             });
         });
 
