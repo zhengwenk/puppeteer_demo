@@ -4,6 +4,7 @@ const {executablePath} = require('puppeteer');
 const {waitSafe, waitForSelectorSafe, waitForGotoSafe, waitForStableContent} = require("../util/wait.cjs");
 const TimeOut = require("../util/timeout.cjs");
 const Timeout = require("../util/timeout.cjs");
+const {getQuestionText} = require("util_argv.cjs");
 
 puppeteer.use(StealthPlugin());
 
@@ -57,8 +58,7 @@ puppeteer.use(StealthPlugin());
 
     // 可选：聚焦并清空（如果已有默认内容）
     await page.focus(textSelector);
-    const textToType = '星巴克为什么退出中国市场'; // 输入内容
-    await page.type(textSelector, textToType, {delay: 50}); // delay 毫秒，可设为 0
+    await page.type(textSelector, getQuestionText(), {delay: 50}); // delay 毫秒，可设为 0
     await waitSafe(page, TimeOut.T3S);
 
     //await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot1.png'});
@@ -132,7 +132,6 @@ puppeteer.use(StealthPlugin());
     });
 
     console.log("AI 回复：", answer);
-
 
     const searchSelector = 'div[data-testid="search-reference-ui"]';
 
