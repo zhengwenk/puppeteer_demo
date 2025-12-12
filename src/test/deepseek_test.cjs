@@ -5,17 +5,12 @@ const {yargs} = require('yargs');
 const {waitForSelectorSafe, waitSafe, waitForGotoSafe} = require('../util/wait.cjs');
 const Timeout = require('../util/timeout.cjs');
 const {waitForStableContent} = require("../util/wait.cjs");
-const TIMEOUT = require("../util/timeout.cjs");
+const {getQuestionText} = require("util_argv");
 
 puppeteer.use(StealthPlugin());
 
 
-function getQuestionText() {
-    const args = process.argv.slice(2);
-    if (args.length > 0) {
-        return args[0];
-    }
-}
+
 
 (async function () {
     const questionText = getQuestionText();
@@ -100,11 +95,14 @@ function getQuestionText() {
     await page.type(textSelector, questionText, {delay: 50}); // delay 毫秒，可设为 0
     await page.mouse.move(200, 300);
     await page.evaluate(() => window.scrollBy(0, 400));
-    await waitSafe(2000);
+    await waitSafe(page, Timeout.T2S);
 
     // 判断联网搜索的开关是否开启
     // 等待联网搜索开关的父元素元素加载
-    await waitForSelectorSafe(page, 'div.ec4f5d61', {visible: true, timeout: 5000});
+    await waitForSelectorSafe(
+        page,
+        'div.ec4f5d61', {visible: true, timeout: Timeout.T5S}
+    );
 
     // 获取父元素下的第二个 button
     const isSelected = await page.evaluate(() => {
@@ -124,14 +122,14 @@ function getQuestionText() {
     });
 
     console.log('第二个 button 是否选中：', isSelected);
-    await waitSafe(1000);
+    await waitSafe(Timeout.T2S);
 
     //点击发送按钮
     await page.click('div.ds-icon-button._7436101');
 
     // 等待30s
     //await waitSafe(page, 60000);
-    await waitForStableContent(page, '.ds-markdown', TIMEOUT.T30S, TIMEOUT.T120S);
+    await waitForStableContent(page, '.ds-markdown', Timeout.T30S, Timeout.T120S);
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
@@ -197,7 +195,7 @@ function getQuestionText() {
     }
 
     const searchEl = await waitForSelectorSafe(page,
-        'div.dc433409 a._24fe229', {visible: true, timeout: 5000}
+        'div.dc433409 a._24fe229', {visible: true, timeout: Timeout.T5S}
     );
 
     if (!searchEl) {

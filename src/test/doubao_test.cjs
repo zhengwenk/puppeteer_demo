@@ -1,26 +1,13 @@
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const {executablePath} = require('puppeteer');
+const {waitSafe, waitForSelectorSafe, waitForGotoSafe, waitForStableContent} = require("../util/wait.cjs");
+const TimeOut = require("../util/timeout.cjs");
+const Timeout = require("../util/timeout.cjs");
 
 puppeteer.use(StealthPlugin());
 
-async function waitSafe(page, ms) {
-    if (page && typeof page.waitForTimeout === 'function') {
-        return page.waitForTimeout(ms);
-    }
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
 
-async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
-    try {
-        const el = await page.waitForSelector(selector, options);
-        console.log(`找到元素: ${selector}`);
-        return el;
-    } catch (err) {
-        console.log(`未找到元素: ${selector}，原因: ${err.message}`);
-        return null;
-    }
-}
 
 (async function () {
     // 启动一个浏览器
@@ -46,23 +33,33 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     // 打开新的页面
     const page = await browser.newPage();
 
-    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
     const targetUrl = "https://www.doubao.com/chat/";
-    await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
+    //await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
 
     // 等待文本输入框元素出现（最多等 10秒）
     const textSelector = 'textarea[data-testid="chat_input_input"]';
-    const textEl = await page.waitForSelector(textSelector, {visible: true, timeout: 10000});
+    //const textEl = await page.waitForSelector(textSelector, {visible: true, timeout: 10000});
 
+    const gotoResult = await waitForGotoSafe(
+        page,
+        targetUrl,
+        {
+            waitSelector: textSelector,
+        }
+    );
 
-    if (textEl) {
-        // 可选：聚焦并清空（如果已有默认内容）
-        await page.focus(textSelector);
-        const textToType = '星巴克为什么退出中国市场'; // 输入内容
-        await page.type(textSelector, textToType, {delay: 50}); // delay 毫秒，可设为 0
-        await waitSafe(page, 3000);
+    if (!gotoResult.ok) {
+        console.log(`导航到目标页面失败:${gotoResult.tag}|${gotoResult.error.message}`);
+        return;
     }
+
+    // 可选：聚焦并清空（如果已有默认内容）
+    await page.focus(textSelector);
+    const textToType = '星巴克为什么退出中国市场'; // 输入内容
+    await page.type(textSelector, textToType, {delay: 50}); // delay 毫秒，可设为 0
+    await waitSafe(page, TimeOut.T3S);
 
     //await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot1.png'});
 
@@ -97,8 +94,20 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     //
     // await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot2.png'});
 
-    await waitSafe(page, 20000);
+    //await waitSafe(page, 20000);
 
+    async function getAnswerText(page) {
+        const containers = await page.$$('.container-PvPoAn');
+        const last = containers[containers.length - 1];
+
+        // 读取内部内容（继续监听增长用）
+        return await last.$$eval(
+            'div[data-testid="message_text_content"]',
+            nodes => nodes.map(n => n.innerText.trim()).join('\n')
+        );
+    }
+
+    await waitForStableContent(page, getAnswerText, Timeout.T30S, Timeout.T120S);
     //await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot3.png'});
 
     //return;

@@ -63,7 +63,9 @@ async function action(page, item) {
     await page.click('div.ds-icon-button._7436101');
     //await waitSafe(page, TIMEOUT.T120S);
 
-    await waitForStableContent(page, '.ds-markdown', TIMEOUT.T30S, TIMEOUT.T120S);
+    await waitForStableContent(
+        page, '.ds-markdown', TIMEOUT.T30S, TIMEOUT.T80S
+    );
 
     // 获取所有回答文本（最新那条）
     const answerText = await page.evaluate(() => {
@@ -111,13 +113,19 @@ async function action(page, item) {
         return {success: false, msg: "获取回答内容失败"}
     }
 
-    const searchEl = await waitForSelectorSafe(page,
-        'div.dc433409 a._24fe229', {visible: true, timeout: 5000}
+    const searchEl = await waitForSelectorSafe(
+        page,
+        'div.dc433409 a._24fe229',
+        {visible: true, timeout: TIMEOUT.T5S}
     );
 
     if (!searchEl) {
         // 如果没获取到参考资料区域，也更算是成功。
-        return {success: true, msg: "没有参考数据", result: {answer: answerText, search: ""}};
+        return {
+            success: true,
+            msg: "没有参考数据",
+            result: {answer: answerText, search: ""}
+        };
     }
 
     // 抓取数据
@@ -135,10 +143,18 @@ async function action(page, item) {
     });
 
     if (searchResults.length === 0) {
-        return {success: true, msg: "获取参考数据失败", result: {answer: answerText, search: ""}};
+        return {
+            success: true,
+            msg: "获取参考数据失败",
+            result: {answer: answerText, search: ""}
+        };
     }
 
-    return {success: true, msg: "操作成功", result: {answer: answerText, search: JSON.stringify(searchResults)}};
+    return {
+        success: true,
+        msg: "操作成功",
+        result: {answer: answerText, search: JSON.stringify(searchResults)}
+    };
 }
 
 module.exports = {

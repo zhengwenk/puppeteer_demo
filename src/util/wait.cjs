@@ -93,7 +93,9 @@ async function waitForStableContent(page, selector, stableMs = 1500, timeout = 2
 
     while (true) {
         // 查询容器内的内容
-        const text = await page.$eval(selector, el => el.innerText.trim()).catch(() => "");
+        const text = typeof selector === "function" ?
+            await selector(page) :
+            await page.$eval(selector, el => el.innerText.trim()).catch(() => "");
 
         // 内容有变化
         if (text !== lastText) {
