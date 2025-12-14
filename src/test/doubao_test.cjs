@@ -8,8 +8,6 @@ const {getQuestionText} = require("./util_argv.cjs");
 
 puppeteer.use(StealthPlugin());
 
-
-
 (async function () {
     // 启动一个浏览器
     const browser = await puppeteer.launch({
@@ -97,14 +95,22 @@ puppeteer.use(StealthPlugin());
     //await waitSafe(page, 20000);
 
     async function getAnswerText(page) {
-        const containers = await page.$$('.container-PvPoAn');
-        const last = containers[containers.length - 1];
+        await page.evaluate(() => {
 
-        // 读取内部内容（继续监听增长用）
-        return await last.$$eval(
-            'div[data-testid="message_text_content"]',
-            nodes => nodes.map(n => n.innerText.trim()).join('\n')
-        );
+            const containers = [...document.querySelectorAll('.container-PvPoAn')];
+            if (!containers.length) return '';
+
+            const last = containers[containers.length - 1];
+            if (!last) return '';
+
+
+            const parts = [...last.querySelectorAll('div[data-testid="message_text_content"]')];
+            if (!parts.length) return '';
+
+            console.log(parts);
+
+            return parts.map(el => el.innerText.trim()).join("\n");
+        });
     }
 
     await waitForStableContent(page, getAnswerText, Timeout.T30S, Timeout.T120S);
