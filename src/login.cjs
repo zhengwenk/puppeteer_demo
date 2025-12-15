@@ -23,7 +23,8 @@ const {AiAccountModel} = require("./models/index.cjs");
         }
 
         browser = await createBrowser({
-            headless: "new",
+            //headless: "new",
+            headless: false,
             userDataDir: process.env.PUPPETEER_CHROME_USER_DATA_DIR + `/${aiAccount.user_name}`,
         });
 
