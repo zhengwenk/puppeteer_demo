@@ -1,9 +1,31 @@
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const {executablePath} = require('puppeteer');
-const {waitForSelectorSafe, waitSafe} = require("../util/wait.cjs");
+const {waitForSelectorSafe, waitSafe, waitForGotoSafe} = require("../util/wait.cjs");
+const {waitForStableContent} = require("../util/wait.cjs");
+const {getQuestionText} = require("./util_argv.cjs");
+const TimeOut = require("../util/timeout.cjs");
 
 puppeteer.use(StealthPlugin());
+
+async function getAnswerText(page) {
+    return await page.evaluate(() => {
+        console.log("start.....");
+        const containers = [...document.querySelectorAll('.agent-chat__list__item--ai')];
+        if (!containers.length) return '';
+        console.log(containers);
+        const last = containers[containers.length - 1];
+        if (!last) return '';
+        console.log(last);
+
+        const parts = [...last.querySelectorAll('.ybc-p')];
+        if (!parts.length) return '';
+
+        console.log(parts);
+
+        return parts.map(el => el.innerText.trim()).join("\n");
+    });
+}
 
 (async function () {
     const browser = await puppeteer.launch({
@@ -40,20 +62,33 @@ puppeteer.use(StealthPlugin());
         });
     });
 
-    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
     const targetUrl = "https://yuanbao.tencent.com/chat";
-    await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
+    //await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
 
     // 等待编辑器出现
     const editorSelector = 'div.ql-editor';
-    const editor = await page.waitForSelector(editorSelector, {visible: true, timeout: 10000});
+    //const editor = await page.waitForSelector(editorSelector, {visible: true, timeout: 10000});
+
+    const gotoResult = await waitForGotoSafe(
+        page,
+        targetUrl,
+        {
+            waitSelector: editorSelector,
+        }
+    );
+
+    if (!gotoResult.ok) {
+        console.log(`导航到目标页面失败:${gotoResult.tag}|${gotoResult.error.message}`);
+        return;
+    }
 
     // 1聚焦到编辑器
-    await editor.focus();
+    await page.focus(editorSelector);
 
     // 2 输入文本
-    const message = "镁光退出消费电子市场的原因是什么？请给出详细分析，并提供相关的参考资料。";
+    const message = getQuestionText();
     await page.keyboard.type(message, {delay: 50}); // delay 模拟人工输入
 
     // 3 模拟按下 Enter 发送
@@ -62,37 +97,27 @@ puppeteer.use(StealthPlugin());
     console.log('等待回答结束...');
 
     // 等待一会儿查看效果
-    await waitSafe(page, 60000);
+    await waitForStableContent(
+        page, getAnswerText, TimeOut.T30S, TimeOut.T120S
+    );
 
     // 获取所有回答文本（最新那条）
-    const answer = await page.evaluate(() => {
-        console.log("start.....");
-        const containers = [...document.querySelectorAll('.agent-chat__list__item--ai')];
-        if (!containers.length) return '';
-        console.log(containers);
-        const last = containers[containers.length - 1];
-        if (!last) return '';
-        console.log(last);
-
-        const parts = [...last.querySelectorAll('.ybc-p')];
-        if (!parts.length) return '';
-
-        console.log(parts);
-
-        return parts.map(el => el.innerText.trim()).join("\n");
-    });
+    const answer = await getAnswerText(page);
 
     console.log("AI 回复：", answer);
 
     const searchReferenceSelector = 'div.agent-chat__search-guid-tool';
-    const searchEl = await waitForSelectorSafe(page, searchReferenceSelector, {visible: true, timeout: 5000});
+    const searchEl = await waitForSelectorSafe(
+        page, searchReferenceSelector,
+        {visible: true, timeout: TimeOut.T5S}
+    );
 
     if (!searchEl) {
         console.log("未找到了参考资料区域");
         return true
     } else {
         await searchEl.click()
-        await waitSafe(page, 3000);
+        await waitSafe(page, TimeOut.T3S);
         const searchResults = await page.evaluate(() => {
             const data = [];
             // 目标列表容器的选择器

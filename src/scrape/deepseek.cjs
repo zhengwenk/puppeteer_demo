@@ -1,6 +1,6 @@
 const {waitForSelectorSafe, waitSafe, waitForStableContent} = require("../util/wait.cjs");
 const {humanType, clickBlank} = require("../util/page.cjs");
-const TIMEOUT = require('../util/timeout.cjs');
+const TimeOut = require('../util/timeout.cjs');
 
 function getTextSelector() {
     // 等待文本输入框元素出现（最多等 5 秒）
@@ -28,15 +28,15 @@ async function action(page, item) {
     // ]);
 
     await humanType(page, getTextSelector(), item.question_content);
-    console.log(`questionText:${item.question_content}`)
-    await waitSafe(TIMEOUT.T3S);
+    await waitSafe(page, TimeOut.T3S);
 
     //await page.screenshot({path: process.env.PUPPETEER_SCREEN_SHOT_DIR + `/screenshot_${item.id}_1.png`});
 
     // 判断联网搜索的开关是否开启
     // 等待联网搜索开关的父元素元素加载
     await waitForSelectorSafe(
-        page, 'div.ec4f5d61', {visible: true, timeout: TIMEOUT.T5S}
+        page, 'div.ec4f5d61',
+        {visible: true, timeout: TimeOut.T5S}
     );
 
     // 获取父元素下的第二个 button
@@ -57,14 +57,15 @@ async function action(page, item) {
     });
 
     console.log('第二个 button 是否选中：', isSelected);
-    await waitSafe(page, TIMEOUT.T3S);
+    await waitSafe(page, TimeOut.T3S);
 
     //点击发送按钮
     await page.click('div.ds-icon-button._7436101');
     //await waitSafe(page, TIMEOUT.T120S);
+    console.log(`questionText:${item.question_content}`)
 
     await waitForStableContent(
-        page, '.ds-markdown', TIMEOUT.T30S, TIMEOUT.T80S
+        page, '.ds-markdown', TimeOut.T30S, TimeOut.T80S
     );
 
     // 获取所有回答文本（最新那条）
@@ -116,7 +117,7 @@ async function action(page, item) {
     const searchEl = await waitForSelectorSafe(
         page,
         'div.dc433409 a._24fe229',
-        {visible: true, timeout: TIMEOUT.T5S}
+        {visible: true, timeout: TimeOut.T5S}
     );
 
     if (!searchEl) {

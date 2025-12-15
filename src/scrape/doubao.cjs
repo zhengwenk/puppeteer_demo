@@ -1,8 +1,7 @@
 const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
 const {humanType, clickBlank} = require("../util/page.cjs");
-const TIMEOUT = require('../util/timeout.cjs');
 const {waitForStableContent} = require("../util/wait");
-const Timeout = require("../util/timeout");
+const TimeOut = require("../util/timeout");
 
 function getTextSelector() {
     // 等待文本输入框元素出现（最多等 5 秒）
@@ -43,21 +42,24 @@ async function action(page, item) {
     // ]);
 
     await humanType(page, getTextSelector(), item.question_content);
-    console.log(`questionText:${item.question_content}`)
-    await waitSafe(2000);
+    await waitSafe(page, TimeOut.T2S);
 
     //await page.screenshot({path: process.env.PUPPETEER_SCREEN_SHOT_DIR + `/screenshot_${item.ai_bot_id}_${item.id}_1.png`});
 
     //点击发送按钮
     await page.click('#flow-end-msg-send');
 
+    console.log(`questionText:${item.question_content}`)
+
     // 等待回答区域内容为定不变化
-    await waitForStableContent(page, getAnswerText, Timeout.T30S, Timeout.T120S);
+    await waitForStableContent(
+        page, getAnswerText, TimeOut.T30S, TimeOut.T120S
+    );
 
     //查找参考资料区域
     const searchSelector = 'div[data-testid="search-reference-ui"]';
     const searchEl = await waitForSelectorSafe(
-        page, searchSelector, {visible: true, timeout: Timeout.T5S}
+        page, searchSelector, {visible: true, timeout: TimeOut.T5S}
     );
 
     // 获取所有回答文本（最新那条）
@@ -72,11 +74,14 @@ async function action(page, item) {
     if (!searchEl) {
         //console.log("未找到搜索结果");
         // 如果没获取到参考资料区域，也更算是成功。
-        return {success: true, msg: "没有参考数据", result: {answer: answerText, search: ""}};
+        return {
+            success: true, msg: "没有参考数据",
+            result: {answer: answerText, search: ""}
+        };
     } else {
         // 点击等待右边列表展开
         await searchEl.click();
-        await waitSafe(page, 3000)
+        await waitSafe(page, TimeOut.T3S)
 
         // 抓取参考资料列表
         const searchResults = await page.evaluate(() => {
@@ -102,10 +107,16 @@ async function action(page, item) {
         });
 
         if (searchResults.length === 0) {
-            return {success: true, msg: "获取参考数据失败", result: {answer: answerText, search: ""}};
+            return {
+                success: true, msg: "获取参考数据失败",
+                result: {answer: answerText, search: ""}
+            };
         }
 
-        return {success: true, msg: "操作成功", result: {answer: answerText, search: JSON.stringify(searchResults)}};
+        return {
+            success: true, msg: "操作成功",
+            result: {answer: answerText, search: JSON.stringify(searchResults)}
+        };
     }
 }
 

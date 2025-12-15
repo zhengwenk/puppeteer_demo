@@ -1,5 +1,32 @@
 const {waitForSelectorSafe, waitSafe} = require("../util/wait.cjs");
 const {humanType, clickBlank} = require("../util/page.cjs");
+const TimeOut = require("../util/timeout");
+const {waitForStableContent} = require("../util/wait");
+
+
+function getTextSelector() {
+    // 等待文本输入框元素出现（最多等 5 秒）
+    return 'div.chat-input-editor';
+}
+
+async function getAnswerText(page) {
+    return await page.evaluate(() => {
+        console.log("start.....");
+        const containers = [...document.querySelectorAll('.markdown-container')];
+        if (!containers.length) return '';
+        console.log(containers);
+        const last = containers[containers.length - 1];
+        if (!last) return '';
+        console.log(last);
+
+        const parts = [...last.querySelectorAll('div.paragraph')];
+        if (!parts.length) return '';
+
+        console.log(parts);
+
+        return parts.map(el => el.innerText.trim()).join("\n");
+    });
+}
 
 /**
  *
@@ -22,17 +49,9 @@ async function action(page, item) {
     // ]);
 
     // 等待文本输入框元素出现（最多等 5 秒）
-    const textSelector = 'div.chat-input-editor';
-    const textEl = await page.waitForSelector(textSelector, {visible: true, timeout: 5000});
 
-    if (!textEl) {
-        return {success: false, msg: "获取文本框失败"}
-    }
-
-    await humanType(page, textSelector, item.question_content);
-    console.log(`questionText:${item.question_content}`)
-    await waitSafe(2000);
-
+    await humanType(page, getTextSelector(), item.question_content);
+    await waitSafe(page, TimeOut.T2S);
 
     // 发送前的截图 debug
     //await page.screenshot({path: process.env.PUPPETEER_SCREEN_SHOT_DIR + `/screenshot_${item.ai_bot_id}_${item.id}_1.png`});
@@ -40,26 +59,16 @@ async function action(page, item) {
     //点击发送按钮
     await page.keyboard.press('Enter');
 
+    console.log(`questionText:${item.question_content}`)
+
     // 等待回答
-    await waitSafe(page, 60000);
+    //await waitSafe(page, 60000);
+    await waitForStableContent(
+        page, getAnswerText, TimeOut.T30S, TimeOut.T80S
+    );
 
     // 获取所有回答文本（最新那条）
-    const answerText = await page.evaluate(() => {
-        console.log("start.....");
-        const containers = [...document.querySelectorAll('.markdown-container')];
-        if (!containers.length) return '';
-        console.log(containers);
-        const last = containers[containers.length - 1];
-        if (!last) return '';
-        console.log(last);
-
-        const parts = [...last.querySelectorAll('div.paragraph')];
-        if (!parts.length) return '';
-
-        console.log(parts);
-
-        return parts.map(el => el.innerText.trim()).join("\n");
-    });
+    const answerText = await getAnswerText(page);
 
     //console.log("ai:" + answerText);
 
@@ -71,7 +80,7 @@ async function action(page, item) {
 
     // kimi的搜索区域是自动展开的，不需要点击
     const searchEl = await waitForSelectorSafe(page,
-        'div.sites', {visible: true, timeout: 5000}
+        'div.sites', {visible: true, timeout: TimeOut.T5S}
     );
 
     if (!searchEl) {
@@ -115,4 +124,5 @@ async function action(page, item) {
 module.exports = {
     channel: "kimi",
     action,
+    getTextSelector,
 };
