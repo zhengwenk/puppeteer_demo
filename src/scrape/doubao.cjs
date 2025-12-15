@@ -1,10 +1,31 @@
 const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
 const {humanType, clickBlank} = require("../util/page.cjs");
 const TIMEOUT = require('../util/timeout.cjs');
+const {waitForStableContent} = require("../util/wait");
+const Timeout = require("../util/timeout");
 
 function getTextSelector() {
     // 等待文本输入框元素出现（最多等 5 秒）
     return 'textarea[data-testid="chat_input_input"]';
+}
+
+async function getAnswerText(page) {
+    return await page.evaluate(() => {
+
+        const containers = [...document.querySelectorAll('.container-PvPoAn')];
+        if (!containers.length) return '';
+
+        const last = containers[containers.length - 1];
+        if (!last) return '';
+
+
+        const parts = [...last.querySelectorAll('div[data-testid="message_text_content"]')];
+        if (!parts.length) return '';
+
+        console.log(parts);
+
+        return parts.map(el => el.innerText.trim()).join("\n");
+    });
 }
 
 async function action(page, item) {
@@ -21,7 +42,6 @@ async function action(page, item) {
     //     page.click(newChatSelector)
     // ]);
 
-
     await humanType(page, getTextSelector(), item.question_content);
     console.log(`questionText:${item.question_content}`)
     await waitSafe(2000);
@@ -31,40 +51,13 @@ async function action(page, item) {
     //点击发送按钮
     await page.click('#flow-end-msg-send');
 
-    // 此处等待3秒，为了等待ui响应.由于headless模式下不太稳定，改为等待更长时间
-    //await waitSafe(3000);
-    //
-
-
-    // 等待时间可以根据实际情况调整，或者或许改成判断某个元素出现更好
-    // 等待特定元素在headless模式下始终无法检测到变化，暂时还是固定等待60秒
-    //await waitSafe(page, 60000);
-
-    // const sendBtnSelector = 'div[data-testid="chat_input_local_break_button"]';
-    // const sendBtnEl = await waitForSelectorSafe(page, sendBtnSelector, {visible: true, timeout: 5000});
-    //
-    // if (!sendBtnEl) {
-    //     console.log("获取发送按钮失败");
-    //     return false;
-    // }
-    //
-    // // 等待回答完成（发送按钮出现 !hidden 类）
-    // const isComplete = await waitForClass(
-    //     page,
-    //     sendBtnSelector,
-    //     '!hidden',
-    //     {timeout: 120000}
-    // );
-
-    // if (isComplete) {
-    //     console.log("回答超时")
-    //     return false;
-    // }
+    // 等待回答区域内容为定不变化
+    await waitForStableContent(page, getAnswerText, Timeout.T30S, Timeout.T120S);
 
     //查找参考资料区域
     const searchSelector = 'div[data-testid="search-reference-ui"]';
     const searchEl = await waitForSelectorSafe(
-        page, searchSelector, {visible: true, timeout: 80000}
+        page, searchSelector, {visible: true, timeout: Timeout.T5S}
     );
 
     // 获取所有回答文本（最新那条）

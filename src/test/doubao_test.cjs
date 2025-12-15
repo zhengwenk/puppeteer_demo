@@ -8,6 +8,25 @@ const {getQuestionText} = require("./util_argv.cjs");
 
 puppeteer.use(StealthPlugin());
 
+async function getAnswerText(page) {
+    return await page.evaluate(() => {
+
+        const containers = [...document.querySelectorAll('.container-PvPoAn')];
+        if (!containers.length) return '';
+
+        const last = containers[containers.length - 1];
+        if (!last) return '';
+
+
+        const parts = [...last.querySelectorAll('div[data-testid="message_text_content"]')];
+        if (!parts.length) return '';
+
+        //console.log(parts);
+
+        return parts.map(el => el.innerText.trim()).join("\n");
+    });
+}
+
 (async function () {
     // 启动一个浏览器
     const browser = await puppeteer.launch({
@@ -69,49 +88,9 @@ puppeteer.use(StealthPlugin());
 
     // 再点击发送按钮
     await page.click('#flow-end-msg-send');
-
-    //await waitSafe(page, 10000);
-
-    // await page.mouse.move(200, 300);
-    //
-    // // 获取当前视口的宽度和高度
-    // const {width, height} = await page.evaluate(() => {
-    //     return {
-    //         width: document.documentElement.clientWidth,
-    //         height: document.documentElement.clientHeight,
-    //     };
-    // });
-
-    // // 计算一个点击坐标，例如点击页面中心附近
-    // // Puppeteer 的坐标是相对于视口左上角 (0, 0) 的 CSS 像素
-    // const clickX = Math.floor(width / 2); // 屏幕宽度的一半
-    // const clickY = Math.floor(height / 2); // 屏幕高度的一半
-    // console.log(`点击坐标: (${clickX}, ${clickY})`);
-    // // 模拟鼠标点击这个坐标
-    // await page.mouse.click(clickX, clickY);
-    //
     // await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot2.png'});
 
     //await waitSafe(page, 20000);
-
-    async function getAnswerText(page) {
-        await page.evaluate(() => {
-
-            const containers = [...document.querySelectorAll('.container-PvPoAn')];
-            if (!containers.length) return '';
-
-            const last = containers[containers.length - 1];
-            if (!last) return '';
-
-
-            const parts = [...last.querySelectorAll('div[data-testid="message_text_content"]')];
-            if (!parts.length) return '';
-
-            console.log(parts);
-
-            return parts.map(el => el.innerText.trim()).join("\n");
-        });
-    }
 
     await waitForStableContent(page, getAnswerText, Timeout.T30S, Timeout.T120S);
     //await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot3.png'});
@@ -120,22 +99,7 @@ puppeteer.use(StealthPlugin());
     console.log('回答结束,开始获取内容');
 
     // 获取所有回答文本（最新那条）
-    const answer = await page.evaluate(() => {
-        console.log("start.....");
-        const containers = [...document.querySelectorAll('.container-PvPoAn')];
-        if (!containers.length) return '';
-        console.log(containers);
-        const last = containers[containers.length - 1];
-        if (!last) return '';
-        console.log(last);
-
-        const parts = [...last.querySelectorAll('div[data-testid="message_text_content"]')];
-        if (!parts.length) return '';
-
-        console.log(parts);
-
-        return parts.map(el => el.innerText.trim()).join("\n");
-    });
+    const answer = await getAnswerText();
 
     console.log("AI 回复：", answer);
 

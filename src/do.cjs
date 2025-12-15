@@ -127,6 +127,7 @@ if (!isLocked) {
 
                 if (!gotoResult.ok) {
                     console.log(`${gotoResult.tag} 失败`, gotoResult.error.message)
+                    // 重试一次
                     const gotoResult = await waitForGotoSafe(
                         page, aiAccount.url, {
                             waitSelector: handler.getTextSelector(),
