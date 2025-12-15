@@ -1,5 +1,31 @@
-const {waitForSelectorSafe, waitSafe} = require("../util/wait.cjs");
+const {waitForSelectorSafe, waitSafe, waitForStableContent} = require("../util/wait.cjs");
 const {humanType, clickBlank} = require("../util/page.cjs");
+const TimeOut = require("../util/timeout.cjs");
+
+
+function getTextSelector() {
+    // 等待文本输入框元素出现（最多等 5 秒）
+    return 'div.ql-editor';
+}
+
+async function getAnswerText(page) {
+    return await page.evaluate(() => {
+        console.log("start.....");
+        const containers = [...document.querySelectorAll('.agent-chat__list__item--ai')];
+        if (!containers.length) return '';
+        console.log(containers);
+        const last = containers[containers.length - 1];
+        if (!last) return '';
+        console.log(last);
+
+        const parts = [...last.querySelectorAll('.ybc-p')];
+        if (!parts.length) return '';
+
+        console.log(parts);
+
+        return parts.map(el => el.innerText.trim()).join("\n");
+    });
+}
 
 /**
  *
@@ -22,16 +48,16 @@ async function action(page, item) {
     // ]);
 
     // 等待文本输入框元素出现（最多等 5 秒）
-    const textSelector = 'div.ql-editor';
-    const textEl = await page.waitForSelector(textSelector, {visible: true, timeout: 10000});
+    // const textSelector = 'div.ql-editor';
+    // const textEl = await page.waitForSelector(textSelector, {visible: true, timeout: 10000});
+    //
+    // if (!textEl) {
+    //     return {success: false, msg: "获取文本框失败"}
+    // }
 
-    if (!textEl) {
-        return {success: false, msg: "获取文本框失败"}
-    }
 
-    await humanType(page, textSelector, item.question_content);
-    console.log(`questionText:${item.question_content}`)
-    await waitSafe(2000);
+    await humanType(page, getTextSelector(), item.question_content);
+    await waitSafe(page, TimeOut.T2S);
 
 
     // 发送前的截图 debug
@@ -40,28 +66,18 @@ async function action(page, item) {
     //点击发送按钮
     await page.keyboard.press('Enter');
 
+    console.log(`questionText:${item.question_content}`)
+
     // 等待回答
-    await waitSafe(page, 60000);
+    //await waitSafe(page, 60000);
+    await waitForStableContent(
+        page, getAnswerText, TimeOut.T30S, TimeOut.T120S
+    );
 
     console.log('等待回答结束...');
 
     // 获取所有回答文本（最新那条）
-    const answerText = await page.evaluate(() => {
-        console.log("start.....");
-        const containers = [...document.querySelectorAll('.agent-chat__list__item--ai')];
-        if (!containers.length) return '';
-        console.log(containers);
-        const last = containers[containers.length - 1];
-        if (!last) return '';
-        console.log(last);
-
-        const parts = [...last.querySelectorAll('.ybc-p')];
-        if (!parts.length) return '';
-
-        console.log(parts);
-
-        return parts.map(el => el.innerText.trim()).join("\n");
-    });
+    const answerText = await getAnswerText(page)
 
     //console.log("ai:" + answerText);
 
@@ -72,14 +88,17 @@ async function action(page, item) {
     }
 
     const searchReferenceSelector = 'div.agent-chat__search-guid-tool';
-    const searchReferenceEl = await waitForSelectorSafe(page, searchReferenceSelector, {visible: true, timeout: 5000});
+    const searchReferenceEl = await waitForSelectorSafe(
+        page, searchReferenceSelector,
+        {visible: true, timeout: TimeOut.T5S}
+    );
 
     if (!searchReferenceEl) {
         return {success: true, msg: "获取参考数据按钮失败", result: {answer: answerText, search: ""}};
     }
 
     await searchReferenceEl.click()
-    await waitSafe(page, 3000);
+    await waitSafe(page, TimeOut.T3S);
 
     const searchResults = await page.evaluate(() => {
         const data = [];
@@ -147,4 +166,5 @@ async function action(page, item) {
 module.exports = {
     channel: "yuanbao",
     action,
+    getTextSelector,
 };

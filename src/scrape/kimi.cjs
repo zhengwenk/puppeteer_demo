@@ -1,8 +1,6 @@
-const {waitForSelectorSafe, waitSafe} = require("../util/wait.cjs");
+const {waitForSelectorSafe, waitSafe, waitForStableContent} = require("../util/wait.cjs");
 const {humanType, clickBlank} = require("../util/page.cjs");
 const TimeOut = require("../util/timeout");
-const {waitForStableContent} = require("../util/wait");
-
 
 function getTextSelector() {
     // 等待文本输入框元素出现（最多等 5 秒）
@@ -64,7 +62,7 @@ async function action(page, item) {
     // 等待回答
     //await waitSafe(page, 60000);
     await waitForStableContent(
-        page, getAnswerText, TimeOut.T30S, TimeOut.T80S
+        page, getAnswerText, TimeOut.T30S, TimeOut.T120S
     );
 
     // 获取所有回答文本（最新那条）

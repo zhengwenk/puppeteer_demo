@@ -1,7 +1,6 @@
-const {waitForSelectorSafe, waitSafe, waitForClass} = require("../util/wait.cjs");
+const {waitForSelectorSafe, waitSafe, waitForClass, waitForStableContent} = require("../util/wait.cjs");
 const {humanType, clickBlank} = require("../util/page.cjs");
-const {waitForStableContent} = require("../util/wait");
-const TimeOut = require("../util/timeout");
+const TimeOut = require("../util/timeout.cjs");
 
 function getTextSelector() {
     // 等待文本输入框元素出现（最多等 5 秒）
@@ -56,12 +55,6 @@ async function action(page, item) {
         page, getAnswerText, TimeOut.T30S, TimeOut.T120S
     );
 
-    //查找参考资料区域
-    const searchSelector = 'div[data-testid="search-reference-ui"]';
-    const searchEl = await waitForSelectorSafe(
-        page, searchSelector, {visible: true, timeout: TimeOut.T5S}
-    );
-
     // 获取所有回答文本（最新那条）
     const answerText = await getAnswerText(page);
 
@@ -70,6 +63,12 @@ async function action(page, item) {
         //await page.screenshot({path: process.env.PUPPETEER_SCREEN_SHOT_DIR + `/screenshot_${item.ai_bot_id}_${item.id}_2.png`});
         return {success: false, msg: "获取回答内容失败"}
     }
+
+    //查找参考资料区域
+    const searchSelector = 'div[data-testid="search-reference-ui"]';
+    const searchEl = await waitForSelectorSafe(
+        page, searchSelector, {visible: true, timeout: TimeOut.T5S}
+    );
 
     if (!searchEl) {
         //console.log("未找到搜索结果");
