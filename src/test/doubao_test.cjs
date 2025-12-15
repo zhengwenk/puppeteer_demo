@@ -99,7 +99,7 @@ async function getAnswerText(page) {
     console.log('回答结束,开始获取内容');
 
     // 获取所有回答文本（最新那条）
-    const answer = await getAnswerText();
+    const answer = await getAnswerText(page);
 
     console.log("AI 回复：", answer);
 
