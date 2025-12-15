@@ -61,21 +61,7 @@ async function action(page, item) {
     );
 
     // 获取所有回答文本（最新那条）
-    const answerText = await page.evaluate(() => {
-        console.log("start.....");
-        const containers = [...document.querySelectorAll('.container-PvPoAn')];
-
-        if (!containers.length) return '';
-
-        const last = containers[containers.length - 1];
-        if (!last) return '';
-
-
-        const parts = [...last.querySelectorAll('div[data-testid="message_text_content"]')];
-        if (!parts.length) return '';
-
-        return parts.map(el => el.innerText.trim()).join("\n");
-    });
+    const answerText = await getAnswerText(page);
 
     if (answerText.length <= 10 || answerText === item.question_content) {
         //await clickBlank(page)

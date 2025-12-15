@@ -1,25 +1,29 @@
 const puppeteer = require('puppeteer-extra');
 const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const {executablePath} = require('puppeteer');
+const {waitSafe, waitForSelectorSafe, waitForGotoSafe, waitForStableContent} = require("../util/wait.cjs");
+const TimeOut = require("../util/timeout.cjs");
+const {getQuestionText} = require("./util_argv.cjs");
 
 puppeteer.use(StealthPlugin());
 
-async function waitSafe(page, ms) {
-    if (page && typeof page.waitForTimeout === 'function') {
-        return page.waitForTimeout(ms);
-    }
-    return new Promise(resolve => setTimeout(resolve, ms));
-}
+async function getAnswerText(page) {
+    return await page.evaluate(() => {
+        console.log("start.....");
+        const containers = [...document.querySelectorAll('.markdown-container')];
+        if (!containers.length) return '';
+        console.log(containers);
+        const last = containers[containers.length - 1];
+        if (!last) return '';
+        console.log(last);
 
-async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
-    try {
-        const el = await page.waitForSelector(selector, options);
-        console.log(`找到元素: ${selector}`);
-        return el;
-    } catch (err) {
-        console.log(`未找到元素: ${selector}，原因: ${err.message}`);
-        return null;
-    }
+        const parts = [...last.querySelectorAll('div.paragraph')];
+        if (!parts.length) return '';
+
+        console.log(parts);
+
+        return parts.map(el => el.innerText.trim()).join("\n");
+    });
 }
 
 
@@ -59,55 +63,55 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
         });
     });
 
-    page.on('console', msg => console.log('PAGE LOG:', msg.text()));
+    //page.on('console', msg => console.log('PAGE LOG:', msg.text()));
 
     const targetUrl = "https://www.kimi.com";
-    await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
-
     const textSelector = 'div.chat-input-editor';
-    const textEl = await page.waitForSelector(textSelector, {visible: true, timeout: 5000});
 
-    if (!textEl) {
-        return {success: false, msg: "获取文本框失败"}
+    const gotoResult = await waitForGotoSafe(
+        page,
+        targetUrl,
+        {
+            waitSelector: textSelector,
+        }
+    );
+
+    if (!gotoResult.ok) {
+        console.log(`导航到目标页面失败:${gotoResult.tag}|${gotoResult.error.message}`);
+        return;
     }
 
-    const text = '帮我写一篇去韩国旅游的详细攻略，包含景点、美食、住宿和交通，一家四口出行。';
+    // await page.goto(targetUrl, {waitUntil: 'domcontentloaded', timeout: 20000});
+    // const textEl = await page.waitForSelector(textSelector, {visible: true, timeout: 5000});
+    //
+    // if (!textEl) {
+    //     return {success: false, msg: "获取文本框失败"}
+    // }
+
+    //const text = '帮我写一篇去韩国旅游的详细攻略，包含景点、美食、住宿和交通，一家四口出行。';
     await page.focus(textSelector);
     //await page.click(textSelector);
-    await page.type(textSelector, text, {delay: 50}); // delay 毫秒，可设为 0
+    await page.type(textSelector, getQuestionText(), {delay: 50}); // delay 毫秒，可设为 0
     await page.mouse.move(200, 300);
     await page.evaluate(() => window.scrollBy(0, 400));
-    await waitSafe(2000);
+    await waitSafe(TimeOut.T2S);
 
     //点击发送按钮
     await page.keyboard.press('Enter');
 
+    await waitForStableContent(page, getAnswerText, TimeOut.T30S, TimeOut.T120S);
+
     // 等待回答
-    await waitSafe(page, 60000);
+    //await waitSafe(page, 60000);
 
     // 获取所有回答文本（最新那条）
-    const answerText = await page.evaluate(() => {
-        console.log("start.....");
-        const containers = [...document.querySelectorAll('.markdown-container')];
-        if (!containers.length) return '';
-        console.log(containers);
-        const last = containers[containers.length - 1];
-        if (!last) return '';
-        console.log(last);
-
-        const parts = [...last.querySelectorAll('div.paragraph')];
-        if (!parts.length) return '';
-
-        console.log(parts);
-
-        return parts.map(el => el.innerText.trim()).join("\n");
-    });
+    const answerText = await getAnswerText(page)
 
     console.log("ai:" + answerText);
 
     // kimi的搜索区域是自动展开的，不需要点击
     const searchEl = await waitForSelectorSafe(page,
-        'div.sites', {visible: true, timeout: 5000}
+        'div.sites', {visible: true, timeout: TimeOut.T5S}
     );
 
     if (!searchEl) {
@@ -146,5 +150,6 @@ async function waitForSelectorSafe(page, selector, options = {timeout: 5000}) {
     }
 
     console.log(searchResults);
+
     return true;
 }());

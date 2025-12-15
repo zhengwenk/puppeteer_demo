@@ -3,7 +3,6 @@ const StealthPlugin = require('puppeteer-extra-plugin-stealth');
 const {executablePath} = require('puppeteer');
 const {waitSafe, waitForSelectorSafe, waitForGotoSafe, waitForStableContent} = require("../util/wait.cjs");
 const TimeOut = require("../util/timeout.cjs");
-const Timeout = require("../util/timeout.cjs");
 const {getQuestionText} = require("./util_argv.cjs");
 
 puppeteer.use(StealthPlugin());
@@ -92,7 +91,7 @@ async function getAnswerText(page) {
 
     //await waitSafe(page, 20000);
 
-    await waitForStableContent(page, getAnswerText, Timeout.T30S, Timeout.T120S);
+    await waitForStableContent(page, getAnswerText, TimeOut.T30S, TimeOut.T120S);
     //await page.screenshot({path: process.env.PUPPETEER_USER_QRCODE_IMG_DIR + '/screenshot3.png'});
 
     //return;
@@ -105,7 +104,9 @@ async function getAnswerText(page) {
 
     const searchSelector = 'div[data-testid="search-reference-ui"]';
 
-    const searchEl = await waitForSelectorSafe(page, searchSelector, {visible: true, timeout: 5000});
+    const searchEl = await waitForSelectorSafe(
+        page, searchSelector, {visible: true, timeout: TimeOut.T5S}
+    );
 
     if (!searchEl) {
         console.log("未找到搜索结果");
