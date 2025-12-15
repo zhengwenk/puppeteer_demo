@@ -2,12 +2,11 @@ const handlers = require('./scrape/index.cjs');
 const {createBrowser, createPage, headlessStatus} = require("./browser.cjs");
 const {asyncForEach} = require("./util/array.cjs");
 const {randomInt} = require("./util/math.cjs")
-//const {removeDirSync} = require("./util/file.cjs");
 const ScrapeService = require("./service/ScrapeService.cjs");
 const {lockProcess} = require("./util/lock.cjs");
 const fs = require('fs');
 const {waitSafe, waitForGotoSafe} = require("./util/wait.cjs");
-const TIMEOUT = require('./util/timeout.cjs');
+const TimeOut = require('./util/timeout.cjs');
 
 const execOnceLimit = 200;
 const aiAccountId = Number(process.env.AI_ACCOUNT_ID) || 0;
@@ -137,6 +136,7 @@ if (!isLocked) {
                     if (!gotoResult.ok) {
                         console.log(`${gotoResult.tag} 失败`, gotoResult.error.message)
                         await scrapeService.failTaskPlan(item, resultId, `打开页面失败: ${gotoResult.error.message}`);
+                        return
                     }
                 }
 
@@ -147,7 +147,18 @@ if (!isLocked) {
                 } else {
                     // 等待一会儿重试一次
                     await waitSafe(page, randomInt(60000, 120000));
-                    await page.goto(aiAccount.url, {waitUntil: 'networkidle2', timeout: 10000});
+                    //await page.goto(aiAccount.url, {waitUntil: 'networkidle2', timeout: 10000});
+                    const gotoResult = await waitForGotoSafe(
+                        page, aiAccount.url, {
+                            waitSelector: handler.getTextSelector(),
+                        }
+                    );
+
+                    if (!gotoResult.ok) {
+                        console.log(`${gotoResult.tag} 失败`, gotoResult.error.message)
+                        await scrapeService.failTaskPlan(item, resultId, gotoResult.error.message);
+                        return
+                    }
 
                     ({success, msg, result} = await handler.action(page, questionInfo))
 
